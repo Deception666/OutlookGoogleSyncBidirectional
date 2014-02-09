@@ -45,6 +45,11 @@ namespace OutlookGoogleSync
             } else {
                 XMLManager.export(Settings.Instance, FILENAME);
             }
+
+            //create the timer for the autosynchro
+            ogstimer = new Timer();
+            //ogstimer.Interval = 30000;
+            ogstimer.Tick += new EventHandler(ogstimer_Tick);
             
             //update GUI from Settings
             tbDaysInThePast.Text = Settings.Instance.DaysInThePast.ToString();
@@ -69,13 +74,6 @@ namespace OutlookGoogleSync
                 this.Hide();
                 this.ShowInTaskbar = false;
             }
-            
-            //set up timer (every 30s) for checking the minute offsets
-            ogstimer = new Timer();
-            ogstimer.Interval = 30000;
-            ogstimer.Tick += new EventHandler(ogstimer_Tick);
-            ogstimer.Start();
-            oldtime = DateTime.Now;
             
             //set up tooltips for some controls
             ToolTip toolTip1 = new ToolTip();
@@ -105,21 +103,19 @@ namespace OutlookGoogleSync
 
         void ogstimer_Tick(object sender, EventArgs e)
         {
-            if (!cbSyncEveryHour.Checked) return;
-            DateTime newtime = DateTime.Now;
-            if (newtime.Minute != oldtime.Minute)
+            SyncNow_Click(null, null);
+        }
+
+        void updateSyncTimer()
+        {
+            if (cbSyncEveryHour.Checked)
             {
-                oldtime = newtime;
-                if (MinuteOffsets.Contains(newtime.Minute)) 
-                {
-                    if (cbShowBubbleTooltips.Checked) notifyIcon1.ShowBalloonTip(
-                        500, 
-                        "OutlookGoogleSync", 
-                        "Sync started at desired minute offset " + newtime.Minute.ToString(),
-                        ToolTipIcon.Info
-                    );
-                    SyncNow_Click(null, null);
-                }
+                ogstimer.Stop();
+                int min = 0;
+                int.TryParse(tbMinuteOffsets.Text, out min);
+                if (min < 1) { min = 60; }
+                ogstimer.Interval = min * 60000;
+                ogstimer.Start();
             }
         }
         
@@ -413,22 +409,13 @@ namespace OutlookGoogleSync
         void TbMinuteOffsetsTextChanged(object sender, EventArgs e)
 		{
 		    Settings.Instance.MinuteOffsets = tbMinuteOffsets.Text;
-		    
-		    MinuteOffsets.Clear();
-	        char[] delimiters = { ' ', ',', '.', ':', ';' };
-            string[] chunks = tbMinuteOffsets.Text.Split(delimiters);
-            foreach (string c in chunks)
-            {
-                int min = 0;
-                int.TryParse(c, out min);
-                MinuteOffsets.Add(min);
-            }
+            updateSyncTimer();
 		}
 
-		
 		void CbSyncEveryHourCheckedChanged(object sender, System.EventArgs e)
 		{
 		    Settings.Instance.SyncEveryHour = cbSyncEveryHour.Checked;
+            updateSyncTimer();
 		}
 		
 		void CbShowBubbleTooltipsCheckedChanged(object sender, System.EventArgs e)
@@ -507,9 +494,6 @@ namespace OutlookGoogleSync
 		{
 			System.Diagnostics.Process.Start(linkLabel1.Text);			
 		}
-		
-
-		
 
 
     }

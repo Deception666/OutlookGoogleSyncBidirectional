@@ -96,7 +96,6 @@ C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\bin\Debug\Goo
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\bin\Debug\Google.Apis.Calendar.v3.pdb
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\bin\Debug\Google.Apis.Calendar.v3.xml
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\bin\Debug\Newtonsoft.Json.Net35.xml
-C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.csprojResolveAssemblyReference.cache
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.EnterAuthorizationCode.resources
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.MainForm.resources
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.csproj.GenerateResource.Cache
