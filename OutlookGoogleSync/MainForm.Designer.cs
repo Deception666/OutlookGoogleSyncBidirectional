@@ -37,6 +37,7 @@ namespace OutlookGoogleSync
 		private void InitializeComponent()
 		{
 		    this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm)); 
 		    this.tabControl1 = new System.Windows.Forms.TabControl();
 		    this.tabPage1 = new System.Windows.Forms.TabPage();
 		    this.LogBox = new System.Windows.Forms.TextBox();
@@ -392,6 +393,7 @@ namespace OutlookGoogleSync
 		    // 
 		    // notifyIcon1
 		    // 
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon"))); 
 		    this.notifyIcon1.Text = "OutlookGoogleSync";
 		    this.notifyIcon1.Click += new System.EventHandler(this.NotifyIcon1Click);
 		    // 
@@ -402,6 +404,7 @@ namespace OutlookGoogleSync
 		    this.ClientSize = new System.Drawing.Size(519, 529);
 		    this.Controls.Add(this.tabControl1);
 		    this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon"))); 
 		    this.Name = "MainForm";
 		    this.Text = "OutlookGoogleSync";
 		    this.Resize += new System.EventHandler(this.MainFormResize);

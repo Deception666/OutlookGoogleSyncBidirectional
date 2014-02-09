@@ -67,6 +67,7 @@ namespace OutlookGoogleSync
                 this.WindowState = FormWindowState.Minimized;
                 notifyIcon1.Visible = true;
                 this.Hide();
+                this.ShowInTaskbar = false;
             }
             
             //set up timer (every 30s) for checking the minute offsets
@@ -467,8 +468,8 @@ namespace OutlookGoogleSync
 		
 		void NotifyIcon1Click(object sender, EventArgs e)
 		{
-		    this.Show();
 		    this.WindowState = FormWindowState.Normal;
+		    this.Show();
 		}
 		
 		void MainFormResize(object sender, EventArgs e)
@@ -478,11 +479,13 @@ namespace OutlookGoogleSync
             {
                  notifyIcon1.Visible = true;
                  //notifyIcon1.ShowBalloonTip(500, "OutlookGoogleSync", "Click to open again.", ToolTipIcon.Info);
-                 this.Hide();    
+                 this.Hide();
+                 this.ShowInTaskbar = false; 
             }
             else if (this.WindowState == FormWindowState.Normal)
             {
                  notifyIcon1.Visible = false;
+                 this.ShowInTaskbar = true;
             }
         }
         
