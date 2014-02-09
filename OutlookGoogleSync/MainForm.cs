@@ -20,7 +20,7 @@ namespace OutlookGoogleSync
         public static MainForm Instance;
         
         public const string FILENAME = "settings.xml";
-        public const string VERSION = "1.0.8";
+        public const string VERSION = "1.0.10";
         
         public Timer ogstimer;
         public DateTime oldtime;
@@ -126,8 +126,16 @@ namespace OutlookGoogleSync
         {
             bGetMyCalendars.Enabled = false;
             cbCalendars.Enabled = false;
-            
-            List<MyCalendarListEntry> calendars = GoogleCalendar.Instance.getCalendars();
+            List<MyCalendarListEntry> calendars = null;
+            try
+            {
+                calendars = GoogleCalendar.Instance.getCalendars();
+            }
+            catch (System.Exception ex)
+            {
+                logboxout("Unable to get the list of Google Calendars. The folowing error occurs:");
+                logboxout(ex.Message + "\r\n => Check your network connection.");
+            }
             if (calendars != null)
             {
                 cbCalendars.Items.Clear();
@@ -176,7 +184,21 @@ namespace OutlookGoogleSync
             
             
             logboxout("Reading Google Calendar Entries...");
-            List<Event> GoogleEntries = GoogleCalendar.Instance.getCalendarEntriesInRange();
+            List<Event> GoogleEntries = null;
+            try
+            {
+                GoogleEntries = GoogleCalendar.Instance.getCalendarEntriesInRange();
+            }
+            catch (System.Exception ex)
+            {
+                logboxout("Unable to connect to the Google Calendar. The folowing error occurs:");
+                logboxout(ex.Message + "\r\n => Check your network connection.");
+                logboxout("--------------------------------------------------");
+                logboxout("Operation aborted !");
+                bSyncNow.Enabled = true;
+                return;
+            }
+
             if (cbCreateFiles.Checked)
             {
                 TextWriter tw = new StreamWriter("export_found_in_google.txt");
@@ -220,7 +242,19 @@ namespace OutlookGoogleSync
             if (GoogleEntriesToBeDeleted.Count>0)
             {
                 logboxout("Deleting " + GoogleEntriesToBeDeleted.Count + " Google Calendar Entries...");
-                foreach(Event ev in GoogleEntriesToBeDeleted) GoogleCalendar.Instance.deleteCalendarEntry(ev);
+                try
+                {
+                    foreach(Event ev in GoogleEntriesToBeDeleted) GoogleCalendar.Instance.deleteCalendarEntry(ev);
+                }
+                catch (System.Exception ex)
+                {
+                    logboxout("Unable to delete obsolete entries out to the Google Calendar. The folowing error occurs:");
+                    logboxout(ex.Message + "\r\n => Check your network connection.");
+                    logboxout("--------------------------------------------------");
+                    logboxout("Operation aborted !");
+                    bSyncNow.Enabled = true;
+                    return;
+                }
                 logboxout("Done.");
                 logboxout("--------------------------------------------------");
             }
@@ -231,10 +265,10 @@ namespace OutlookGoogleSync
                 foreach(AppointmentItem ai in OutlookEntriesToBeCreated)
                 {
                     Event ev = new Event();
-                    
+
                     ev.Start = new EventDateTime();
                     ev.End = new EventDateTime();
-                    
+
                     if (ai.AllDayEvent)
                     {
                         ev.Start.Date = ai.Start.ToString("yyyy-MM-dd");
@@ -246,8 +280,8 @@ namespace OutlookGoogleSync
                     ev.Summary = ai.Subject;
                     if (cbAddDescription.Checked) ev.Description = ai.Body;
                     ev.Location = ai.Location;
-                    
-                    
+
+
                     //consider the reminder set in Outlook
                     if (cbAddReminders.Checked && ai.ReminderSet)
                     {
@@ -259,8 +293,8 @@ namespace OutlookGoogleSync
                         ev.Reminders.Overrides = new List<EventReminder>();
                         ev.Reminders.Overrides.Add(reminder);
                     }
-                    
-                    
+
+
                     if (cbAddAttendees.Checked)
                     {
                         ev.Description += Environment.NewLine;
@@ -271,9 +305,21 @@ namespace OutlookGoogleSync
                         ev.Description += Environment.NewLine + "OPTIONAL: " + Environment.NewLine + splitAttendees(ai.OptionalAttendees);
                         ev.Description += Environment.NewLine + "==============================================";
                     }
-                    
-                    GoogleCalendar.Instance.addEntry(ev);
+                    try
+                    {
+                        GoogleCalendar.Instance.addEntry(ev);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        logboxout("Unable to add new entries into the Google Calendar. The folowing error occurs:");
+                        logboxout(ex.Message + "\r\n => Check your network connection.");
+                        logboxout("--------------------------------------------------");
+                        logboxout("Operation aborted !");
+                        bSyncNow.Enabled = true;
+                        return;
+                    }
                 }
+
                 logboxout("Done.");
                 logboxout("--------------------------------------------------");
             }

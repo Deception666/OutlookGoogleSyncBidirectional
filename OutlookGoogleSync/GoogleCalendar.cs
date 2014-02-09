@@ -88,7 +88,8 @@ namespace OutlookGoogleSync
             }
             catch (Exception ex)
             {
-                MainForm.Instance.HandleException(ex);
+                //MainForm.Instance.HandleException(ex);
+                throw ex;
             }
             
             if (request != null)
@@ -122,7 +123,8 @@ namespace OutlookGoogleSync
             }
             catch (Exception ex)
             {
-                MainForm.Instance.HandleException(ex);
+                //MainForm.Instance.HandleException(ex);
+                throw ex;
             }       
             
             if (request != null)
@@ -142,7 +144,8 @@ namespace OutlookGoogleSync
             }
             catch (Exception ex)
             {
-                MainForm.Instance.HandleException(ex);
+                //MainForm.Instance.HandleException(ex);
+                throw ex;
             }       
         }		
 		
@@ -154,7 +157,8 @@ namespace OutlookGoogleSync
             }
             catch (Exception ex)
             {
-                MainForm.Instance.HandleException(ex);
+                //MainForm.Instance.HandleException(ex);
+                throw ex;
             }   
 		}
 		
