@@ -101,3 +101,4 @@ C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.csproj.GenerateResource.Cache
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.exe
 C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.pdb
+C:\Users\Cat&Bert\Desktop\Bert\outlookgooglesync\OutlookGoogleSync\obj\x86\Debug\OutlookGoogleSync.csprojResolveAssemblyReference.cache

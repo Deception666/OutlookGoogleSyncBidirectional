@@ -455,8 +455,8 @@ namespace OutlookGoogleSync
 		
 		void NotifyIcon1Click(object sender, EventArgs e)
 		{
-		    this.WindowState = FormWindowState.Normal;
 		    this.Show();
+		    this.WindowState = FormWindowState.Normal;
 		}
 		
 		void MainFormResize(object sender, EventArgs e)
@@ -465,7 +465,6 @@ namespace OutlookGoogleSync
             if (this.WindowState == FormWindowState.Minimized)
             {
                  notifyIcon1.Visible = true;
-                 //notifyIcon1.ShowBalloonTip(500, "OutlookGoogleSync", "Click to open again.", ToolTipIcon.Info);
                  this.Hide();
                  this.ShowInTaskbar = false; 
             }
