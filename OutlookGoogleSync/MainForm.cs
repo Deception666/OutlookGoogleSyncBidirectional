@@ -165,7 +165,20 @@ namespace OutlookGoogleSync
             logboxout("--------------------------------------------------");
             
             logboxout("Reading Outlook Calendar Entries...");
-            List<AppointmentItem> OutlookEntries = OutlookCalendar.Instance.getCalendarEntriesInRange();
+            List<AppointmentItem> OutlookEntries = null;
+            try
+            {
+                OutlookEntries = OutlookCalendar.Instance.getCalendarEntriesInRange();
+            }
+            catch(System.Exception ex)
+            {
+                logboxout("Unable to access to the Outlook Calendar. The folowing error occurs:");
+                logboxout(ex.Message + "\r\n => Retry later.");
+                logboxout("--------------------------------------------------");
+                logboxout("Operation aborted !");
+                bSyncNow.Enabled = true;
+                return;
+            }
             if (cbCreateFiles.Checked)
             {
                 TextWriter tw = new StreamWriter("export_found_in_outlook.txt");
