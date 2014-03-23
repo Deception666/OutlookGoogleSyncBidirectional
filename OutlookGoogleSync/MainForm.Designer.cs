@@ -40,6 +40,8 @@ namespace OutlookGoogleSync
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lNextSync = new System.Windows.Forms.Label();
+            this.lLastSync = new System.Windows.Forms.Label();
             this.LogBox = new System.Windows.Forms.TextBox();
             this.bSyncNow = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -93,6 +95,8 @@ namespace OutlookGoogleSync
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.lNextSync);
+            this.tabPage1.Controls.Add(this.lLastSync);
             this.tabPage1.Controls.Add(this.LogBox);
             this.tabPage1.Controls.Add(this.bSyncNow);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -103,13 +107,29 @@ namespace OutlookGoogleSync
             this.tabPage1.Text = "Sync";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // lNextSync
+            // 
+            this.lNextSync.Location = new System.Drawing.Point(252, 14);
+            this.lNextSync.Name = "lNextSync";
+            this.lNextSync.Size = new System.Drawing.Size(232, 31);
+            this.lNextSync.TabIndex = 2;
+            this.lNextSync.Text = "Next scheduled sync: ";
+            // 
+            // lLastSync
+            // 
+            this.lLastSync.Location = new System.Drawing.Point(5, 14);
+            this.lLastSync.Name = "lLastSync";
+            this.lLastSync.Size = new System.Drawing.Size(251, 31);
+            this.lLastSync.TabIndex = 2;
+            this.lLastSync.Text = "Last succeded synchro: ";
+            // 
             // LogBox
             // 
             this.LogBox.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LogBox.Location = new System.Drawing.Point(7, 6);
+            this.LogBox.Location = new System.Drawing.Point(3, 57);
             this.LogBox.Multiline = true;
             this.LogBox.Name = "LogBox";
-            this.LogBox.Size = new System.Drawing.Size(477, 430);
+            this.LogBox.Size = new System.Drawing.Size(481, 379);
             this.LogBox.TabIndex = 1;
             // 
             // bSyncNow
@@ -454,6 +474,8 @@ namespace OutlookGoogleSync
 		private System.Windows.Forms.Button bSyncNow;
 		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.Label lLastSync;
+        private System.Windows.Forms.Label lNextSync;
 		
 	
 

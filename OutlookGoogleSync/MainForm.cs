@@ -25,6 +25,8 @@ namespace OutlookGoogleSync
         public Timer ogstimer;
         public DateTime oldtime;
         public List<int> MinuteOffsets = new List<int>();
+        DateTime lastSyncDate;
+        int currentTimerInterval = 0;
         
         public MainForm()
         {
@@ -48,13 +50,13 @@ namespace OutlookGoogleSync
 
             //create the timer for the autosynchro
             ogstimer = new Timer();
-            //ogstimer.Interval = 30000;
             ogstimer.Tick += new EventHandler(ogstimer_Tick);
             
             //update GUI from Settings
             tbDaysInThePast.Text = Settings.Instance.DaysInThePast.ToString();
             tbDaysInTheFuture.Text = Settings.Instance.DaysInTheFuture.ToString();
             tbMinuteOffsets.Text = Settings.Instance.MinuteOffsets;
+            lastSyncDate = Settings.Instance.LastSyncDate;
             cbCalendars.Items.Add(Settings.Instance.UseGoogleCalendar);
             cbCalendars.SelectedIndex = 0;
             cbSyncEveryHour.Checked = Settings.Instance.SyncEveryHour;
@@ -98,7 +100,18 @@ namespace OutlookGoogleSync
             toolTip1.SetToolTip(cbAddDescription, 
                 "The description may contain email addresses, which Outlook may complain about (PopUp-Message: \"Allow Access?\" etc.). \n" +
                 "Turning this off allows OutlookGoogleSync to run without intervention in this case.");
-            
+
+            //Refresh synchronizations (last and next)
+            lLastSync.Text = "Last succeded synchro:\n     " + lastSyncDate.ToLongDateString() + " - " + lastSyncDate.ToLongTimeString();
+            setNextSync(getResyncInterval());
+        }
+
+        int getResyncInterval()
+        {
+            int min = 0;
+            int.TryParse(tbMinuteOffsets.Text, out min);
+            if (min < 1) { min = 60; }
+            return min;
         }
 
         void ogstimer_Tick(object sender, EventArgs e)
@@ -106,16 +119,26 @@ namespace OutlookGoogleSync
             SyncNow_Click(null, null);
         }
 
-        void updateSyncTimer()
+        void setNextSync(int delay)
         {
             if (cbSyncEveryHour.Checked)
             {
-                ogstimer.Stop();
-                int min = 0;
-                int.TryParse(tbMinuteOffsets.Text, out min);
-                if (min < 1) { min = 60; }
-                ogstimer.Interval = min * 60000;
-                ogstimer.Start();
+                DateTime nextSyncDate = lastSyncDate.AddMinutes(delay);
+                if(currentTimerInterval != delay)
+                {
+                    ogstimer.Stop();
+                    DateTime now = DateTime.Now;
+                    TimeSpan diff = nextSyncDate - now;
+                    currentTimerInterval = diff.Minutes;
+                    if (currentTimerInterval < 1) { currentTimerInterval = 1; nextSyncDate = now.AddMinutes(currentTimerInterval); }
+                    ogstimer.Interval = currentTimerInterval * 60000;
+                    ogstimer.Start();
+                }
+                lNextSync.Text = "Next scheduled sync:\n     " + nextSyncDate.ToLongDateString() + " - " + nextSyncDate.ToLongTimeString();
+            }
+            else
+            {
+                lNextSync.Text = "Next scheduled sync:\n     Inactive";
             }
         }
         
@@ -146,53 +169,74 @@ namespace OutlookGoogleSync
             bGetMyCalendars.Enabled = true;
             cbCalendars.Enabled = true;
         }
-        
+
         void SyncNow_Click(object sender, EventArgs e)
+        {
+            bSyncNow.Enabled = false;
+
+            lNextSync.Text = "Next scheduled sync:\n     In progress...";
+
+            LogBox.Clear();
+
+            DateTime SyncStarted = DateTime.Now;
+
+            logboxout("Sync started at " + SyncStarted.ToString());
+            logboxout("--------------------------------------------------");
+
+            Boolean syncOk = synchronize();
+            logboxout("--------------------------------------------------");
+            logboxout(syncOk ? "Sync finished with success !" : "Operation aborted !");
+
+            if (syncOk)
+            {
+                lastSyncDate = SyncStarted;
+                Settings.Instance.LastSyncDate = lastSyncDate;
+                lLastSync.Text = "Last succeded synchro:\n     " + SyncStarted.ToLongDateString() + " - " + SyncStarted.ToLongTimeString();
+                setNextSync(getResyncInterval());
+            }
+            else
+            {
+                setNextSync(5);
+            }
+
+            bSyncNow.Enabled = true;
+        }
+
+
+        Boolean synchronize()
         {
             if (Settings.Instance.UseGoogleCalendar.Id == "")
             {
                 MessageBox.Show("You need to select a Google Calendar first on the 'Settings' tab.");
-                return;
+                return false;
             }
-        
-            bSyncNow.Enabled = false;
-            
-            LogBox.Clear();
-            
-            DateTime SyncStarted = DateTime.Now;
-            
-            logboxout("Sync started at " + SyncStarted.ToString());
-            logboxout("--------------------------------------------------");
-            
+
             logboxout("Reading Outlook Calendar Entries...");
             List<AppointmentItem> OutlookEntries = null;
             try
             {
                 OutlookEntries = OutlookCalendar.Instance.getCalendarEntriesInRange();
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 logboxout("Unable to access to the Outlook Calendar. The folowing error occurs:");
                 logboxout(ex.Message + "\r\n => Retry later.");
-                logboxout("--------------------------------------------------");
-                logboxout("Operation aborted !");
-                bSyncNow.Enabled = true;
-                return;
+                return false;
             }
             if (cbCreateFiles.Checked)
             {
                 TextWriter tw = new StreamWriter("export_found_in_outlook.txt");
-                foreach(AppointmentItem ai in OutlookEntries)
+                foreach (AppointmentItem ai in OutlookEntries)
                 {
                     tw.WriteLine(signature(ai));
                 }
-                tw.Close();            
+                tw.Close();
             }
             logboxout("Found " + OutlookEntries.Count + " Outlook Calendar Entries.");
             logboxout("--------------------------------------------------");
-            
-            
-            
+
+
+
             logboxout("Reading Google Calendar Entries...");
             List<Event> GoogleEntries = null;
             try
@@ -203,16 +247,13 @@ namespace OutlookGoogleSync
             {
                 logboxout("Unable to connect to the Google Calendar. The folowing error occurs:");
                 logboxout(ex.Message + "\r\n => Check your network connection.");
-                logboxout("--------------------------------------------------");
-                logboxout("Operation aborted !");
-                bSyncNow.Enabled = true;
-                return;
+                return false;
             }
 
             if (cbCreateFiles.Checked)
             {
                 TextWriter tw = new StreamWriter("export_found_in_google.txt");
-                foreach(Event ev in GoogleEntries)
+                foreach (Event ev in GoogleEntries)
                 {
                     tw.WriteLine(signature(ev));
                 }
@@ -220,13 +261,13 @@ namespace OutlookGoogleSync
             }
             logboxout("Found " + GoogleEntries.Count + " Google Calendar Entries.");
             logboxout("--------------------------------------------------");
-            
-            
+
+
             List<Event> GoogleEntriesToBeDeleted = IdentifyGoogleEntriesToBeDeleted(OutlookEntries, GoogleEntries);
             if (cbCreateFiles.Checked)
             {
                 TextWriter tw = new StreamWriter("export_to_be_deleted.txt");
-                foreach(Event ev in GoogleEntriesToBeDeleted)
+                foreach (Event ev in GoogleEntriesToBeDeleted)
                 {
                     tw.WriteLine(signature(ev));
                 }
@@ -239,40 +280,37 @@ namespace OutlookGoogleSync
             if (cbCreateFiles.Checked)
             {
                 TextWriter tw = new StreamWriter("export_to_be_created.txt");
-                foreach(AppointmentItem ai in OutlookEntriesToBeCreated)
+                foreach (AppointmentItem ai in OutlookEntriesToBeCreated)
                 {
                     tw.WriteLine(signature(ai));
                 }
                 tw.Close();
             }
             logboxout(OutlookEntriesToBeCreated.Count + " Entries to be created in Google.");
-            logboxout("--------------------------------------------------");
-            
-            
-            if (GoogleEntriesToBeDeleted.Count>0)
+
+
+            if (GoogleEntriesToBeDeleted.Count > 0)
             {
+                logboxout("--------------------------------------------------");
                 logboxout("Deleting " + GoogleEntriesToBeDeleted.Count + " Google Calendar Entries...");
                 try
                 {
-                    foreach(Event ev in GoogleEntriesToBeDeleted) GoogleCalendar.Instance.deleteCalendarEntry(ev);
+                    foreach (Event ev in GoogleEntriesToBeDeleted) GoogleCalendar.Instance.deleteCalendarEntry(ev);
                 }
                 catch (System.Exception ex)
                 {
                     logboxout("Unable to delete obsolete entries out to the Google Calendar. The folowing error occurs:");
                     logboxout(ex.Message + "\r\n => Check your network connection.");
-                    logboxout("--------------------------------------------------");
-                    logboxout("Operation aborted !");
-                    bSyncNow.Enabled = true;
-                    return;
+                    return false;
                 }
                 logboxout("Done.");
-                logboxout("--------------------------------------------------");
             }
 
-            if (OutlookEntriesToBeCreated.Count>0)
+            if (OutlookEntriesToBeCreated.Count > 0)
             {
+                logboxout("--------------------------------------------------");
                 logboxout("Creating " + OutlookEntriesToBeCreated.Count + " Entries in Google...");
-                foreach(AppointmentItem ai in OutlookEntriesToBeCreated)
+                foreach (AppointmentItem ai in OutlookEntriesToBeCreated)
                 {
                     Event ev = new Event();
 
@@ -283,7 +321,9 @@ namespace OutlookGoogleSync
                     {
                         ev.Start.Date = ai.Start.ToString("yyyy-MM-dd");
                         ev.End.Date = ai.End.ToString("yyyy-MM-dd");
-                    } else {
+                    }
+                    else
+                    {
                         ev.Start.DateTime = GoogleCalendar.Instance.GoogleTimeFrom(ai.Start);
                         ev.End.DateTime = GoogleCalendar.Instance.GoogleTimeFrom(ai.End);
                     }
@@ -323,25 +363,15 @@ namespace OutlookGoogleSync
                     {
                         logboxout("Unable to add new entries into the Google Calendar. The folowing error occurs:");
                         logboxout(ex.Message + "\r\n => Check your network connection.");
-                        logboxout("--------------------------------------------------");
-                        logboxout("Operation aborted !");
-                        bSyncNow.Enabled = true;
-                        return;
+                        return false;
                     }
                 }
 
                 logboxout("Done.");
-                logboxout("--------------------------------------------------");
             }
-
-            DateTime SyncFinished = DateTime.Now;
-            TimeSpan Elapsed = SyncFinished - SyncStarted;
-            logboxout("Sync finished at " + SyncFinished.ToString());
-            logboxout("Time needed: " + Elapsed.Minutes + " min " + Elapsed.Seconds + " s");
-            
-            bSyncNow.Enabled = true;
+            return true;
         }
-        
+
         //one attendee per line
         public string splitAttendees(string attendees)
         {
@@ -422,13 +452,13 @@ namespace OutlookGoogleSync
         void TbMinuteOffsetsTextChanged(object sender, EventArgs e)
 		{
 		    Settings.Instance.MinuteOffsets = tbMinuteOffsets.Text;
-            updateSyncTimer();
+            setNextSync(getResyncInterval());
 		}
 
 		void CbSyncEveryHourCheckedChanged(object sender, System.EventArgs e)
 		{
 		    Settings.Instance.SyncEveryHour = cbSyncEveryHour.Checked;
-            updateSyncTimer();
+            setNextSync(getResyncInterval());
 		}
 		
 		void CbShowBubbleTooltipsCheckedChanged(object sender, System.EventArgs e)
@@ -506,7 +536,6 @@ namespace OutlookGoogleSync
 		{
 			System.Diagnostics.Process.Start(linkLabel1.Text);			
 		}
-
 
     }
 }
