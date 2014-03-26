@@ -392,7 +392,7 @@ namespace OutlookGoogleSync
             // 
             // linkLabel1
             // 
-            this.linkLabel1.Location = new System.Drawing.Point(6, 138);
+            this.linkLabel1.Location = new System.Drawing.Point(6, 161);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(475, 23);
             this.linkLabel1.TabIndex = 2;
@@ -403,12 +403,13 @@ namespace OutlookGoogleSync
             // 
             // label4
             // 
+            this.label4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label4.Location = new System.Drawing.Point(3, 32);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(481, 96);
+            this.label4.Size = new System.Drawing.Size(481, 129);
             this.label4.TabIndex = 1;
             this.label4.Text = "OutlookGoogleSync\r\n\r\nVersion {version}\r\n\r\nprogrammed 2012-2013 by\r\nZissis Siantid" +
-    "is\r\n";
+    "is\r\n\r\nenhanced in 2014 by\r\n~ Bycrobe ~\r\n";
             this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // notifyIcon1

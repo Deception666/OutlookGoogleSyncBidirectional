@@ -20,7 +20,7 @@ namespace OutlookGoogleSync
         public static MainForm Instance;
         
         public const string FILENAME = "settings.xml";
-        public const string VERSION = "1.0.10";
+        public const string VERSION = "1.1.0";
         
         public Timer ogstimer;
         public DateTime oldtime;
@@ -191,6 +191,7 @@ namespace OutlookGoogleSync
             {
                 lastSyncDate = SyncStarted;
                 Settings.Instance.LastSyncDate = lastSyncDate;
+                XMLManager.export(Settings.Instance, FILENAME);
                 lLastSync.Text = "Last succeded synchro:\n     " + SyncStarted.ToLongDateString() + " - " + SyncStarted.ToLongTimeString();
                 setNextSync(getResyncInterval());
             }
@@ -221,6 +222,7 @@ namespace OutlookGoogleSync
             {
                 logboxout("Unable to access to the Outlook Calendar. The folowing error occurs:");
                 logboxout(ex.Message + "\r\n => Retry later.");
+                OutlookCalendar.Instance.Reset();
                 return false;
             }
             if (cbCreateFiles.Checked)
@@ -498,8 +500,8 @@ namespace OutlookGoogleSync
 		
 		void NotifyIcon1Click(object sender, EventArgs e)
 		{
-		    this.Show();
-		    this.WindowState = FormWindowState.Normal;
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
 		}
 		
 		void MainFormResize(object sender, EventArgs e)
@@ -514,6 +516,7 @@ namespace OutlookGoogleSync
             else if (this.WindowState == FormWindowState.Normal)
             {
                  notifyIcon1.Visible = false;
+                 this.Show();
                  this.ShowInTaskbar = true;
             }
         }

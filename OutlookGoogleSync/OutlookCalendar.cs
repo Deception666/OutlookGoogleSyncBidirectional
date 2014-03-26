@@ -24,7 +24,6 @@ namespace OutlookGoogleSync
         
         public MAPIFolder UseOutlookCalendar;
         
-        
         public OutlookCalendar()
         {
         
@@ -53,8 +52,14 @@ namespace OutlookGoogleSync
             // Done. Log off.
             oNS.Logoff();
         }
+
+
+        public void Reset()
+        {
+            instance = new OutlookCalendar();
+        }
         
-        
+
         public List<AppointmentItem> getCalendarEntries()
         {
             Items OutlookItems = UseOutlookCalendar.Items;
