@@ -70,6 +70,7 @@ namespace OutlookGoogleSync
          this.label2 = new System.Windows.Forms.Label();
          this.label1 = new System.Windows.Forms.Label();
          this.tabPage3 = new System.Windows.Forms.TabPage();
+         this.pictureBox1 = new System.Windows.Forms.PictureBox();
          this.linkLabel1 = new System.Windows.Forms.LinkLabel();
          this.label4 = new System.Windows.Forms.Label();
          this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
@@ -82,6 +83,7 @@ namespace OutlookGoogleSync
          this.groupBox2.SuspendLayout();
          this.groupBox1.SuspendLayout();
          this.tabPage3.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
          this.SuspendLayout();
          // 
          // tabControl1
@@ -382,6 +384,7 @@ namespace OutlookGoogleSync
          // 
          // tabPage3
          // 
+         this.tabPage3.Controls.Add(this.pictureBox1);
          this.tabPage3.Controls.Add(this.linkLabel1);
          this.tabPage3.Controls.Add(this.label4);
          this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -392,11 +395,21 @@ namespace OutlookGoogleSync
          this.tabPage3.Text = "About";
          this.tabPage3.UseVisualStyleBackColor = true;
          // 
+         // pictureBox1
+         // 
+         this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+         this.pictureBox1.Location = new System.Drawing.Point(117, 221);
+         this.pictureBox1.Name = "pictureBox1";
+         this.pictureBox1.Size = new System.Drawing.Size(256, 256);
+         this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+         this.pictureBox1.TabIndex = 3;
+         this.pictureBox1.TabStop = false;
+         // 
          // linkLabel1
          // 
-         this.linkLabel1.Location = new System.Drawing.Point(6, 161);
+         this.linkLabel1.Location = new System.Drawing.Point(6, 196);
          this.linkLabel1.Name = "linkLabel1";
-         this.linkLabel1.Size = new System.Drawing.Size(475, 23);
+         this.linkLabel1.Size = new System.Drawing.Size(475, 22);
          this.linkLabel1.TabIndex = 2;
          this.linkLabel1.TabStop = true;
          this.linkLabel1.Text = "http://outlookgooglesync.codeplex.com/";
@@ -408,10 +421,10 @@ namespace OutlookGoogleSync
          this.label4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
          this.label4.Location = new System.Drawing.Point(3, 32);
          this.label4.Name = "label4";
-         this.label4.Size = new System.Drawing.Size(481, 129);
+         this.label4.Size = new System.Drawing.Size(481, 164);
          this.label4.TabIndex = 1;
          this.label4.Text = "OutlookGoogleSync\r\n\r\nVersion {version}\r\n\r\nprogrammed 2012-2013 by\r\nZissis Siantid" +
-                            "is\r\n\r\nenhanced in 2014 by\r\n~ Bycrobe ~\r\n";
+    "is\r\n\r\nenhanced in 2014 by\r\n~ Bycrobe ~\r\n\r\nenhanced in 2014 by\r\nDeception666";
          this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
          // 
          // notifyIcon1
@@ -443,6 +456,8 @@ namespace OutlookGoogleSync
          this.groupBox1.ResumeLayout(false);
          this.groupBox1.PerformLayout();
          this.tabPage3.ResumeLayout(false);
+         this.tabPage3.PerformLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
          this.ResumeLayout(false);
 
       }
@@ -479,6 +494,7 @@ namespace OutlookGoogleSync
       private System.Windows.Forms.TabControl tabControl1;
       private System.Windows.Forms.Label lLastSync;
       private System.Windows.Forms.Label lNextSync;
+      private System.Windows.Forms.PictureBox pictureBox1;
 
 
 
