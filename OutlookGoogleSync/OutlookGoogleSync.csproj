@@ -39,6 +39,12 @@
   <PropertyGroup>
     <ProjectGuid>{B35C9DB2-79BC-46A3-9BE4-BCE33BC3721E}</ProjectGuid>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>OutlookGoogleSync.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="EnterAuthorizationCode.cs">
       <SubType>Form</SubType>
