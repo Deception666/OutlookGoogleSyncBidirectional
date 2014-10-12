@@ -70,6 +70,24 @@ namespace OutlookGoogleSync
          cbAddReminders.Checked = Settings.Instance.AddReminders;
          cbCreateFiles.Checked = Settings.Instance.CreateTextFiles;
 
+         // init the calendar service if the user is populated
+         if (Settings.Instance.UseGoogleCalendar.User != "")
+         {
+            if (!GoogleCalendar.Instance.InitCalendarService(Settings.Instance.UseGoogleCalendar.User))
+            {
+               cbCalendars.Items.Clear();
+
+               logboxout("Unable to initialize Google calendar service for the following Google user: " +
+                         Settings.Instance.UseGoogleCalendar.User);
+            }
+            else
+            {
+               logboxout("Initializing Google calendar service for the following Google user: " +
+                         Settings.Instance.UseGoogleCalendar.User + " (" +
+                         Settings.Instance.UseGoogleCalendar.Name + ")");
+            }
+         }
+
          //Start in tray?
          if (cbStartInTray.Checked)
          {
@@ -148,27 +166,45 @@ namespace OutlookGoogleSync
          bGetMyCalendars.Enabled = false;
          cbCalendars.Enabled = false;
          List<MyCalendarListEntry> calendars = null;
-         try
+
+         UserAccountForm user_account_form = new UserAccountForm(Settings.Instance.UseGoogleCalendar.User);
+
+         if (user_account_form.ShowDialog(this) == DialogResult.OK)
          {
-            calendars = GoogleCalendar.Instance.getCalendars();
-         }
-         catch (System.Exception ex)
-         {
-            logboxout("Unable to get the list of Google Calendars. The folowing error occurs:");
-            logboxout(ex.Message + "\r\n => Check your network connection.");
-         }
-         if (calendars != null)
-         {
-            cbCalendars.Items.Clear();
-            foreach (MyCalendarListEntry mcle in calendars)
+            try
             {
-               cbCalendars.Items.Add(mcle);
+               if (!GoogleCalendar.Instance.InitCalendarService(user_account_form.UserAccount))
+               {
+                  cbCalendars.Items.Clear();
+
+                  logboxout("Unable to initialize Google calendar service for the following Google user: " + user_account_form.UserAccount);
+               }
+               else
+               {
+                  logboxout("Initializing Google calendar service for the following Google user: " + user_account_form.UserAccount);
+
+                  calendars = GoogleCalendar.Instance.getCalendars();
+               }
             }
-            MainForm.Instance.cbCalendars.SelectedIndex = 0;
+            catch (System.Exception ex)
+            {
+               logboxout("Unable to get the list of Google Calendars. The folowing error occurs:");
+               logboxout(ex.Message + "\r\n => Check your network connection.");
+            }
+            if (calendars != null)
+            {
+               cbCalendars.Items.Clear();
+               foreach (MyCalendarListEntry mcle in calendars)
+               {
+                  cbCalendars.Items.Add(mcle);
+               }
+               MainForm.Instance.cbCalendars.SelectedIndex = 0;
+            }
+
+            cbCalendars.Enabled = true;
          }
 
          bGetMyCalendars.Enabled = true;
-         cbCalendars.Enabled = true;
       }
 
       void SyncNow_Click(object sender, EventArgs e)

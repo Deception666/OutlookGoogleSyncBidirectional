@@ -30,63 +30,63 @@ namespace OutlookGoogleSync
          }
       }
 
-      CalendarService service;
+      private CalendarService service;
 
-      public GoogleCalendar()
+      public GoogleCalendar() { }
+
+      public bool InitCalendarService( string user )
       {
-         // TODO: needs refactored to work correctly...
-         //var provider = new NativeApplicationClient(GoogleAuthenticationServer.Description);
-         //provider.ClientIdentifier = "662204240419.apps.googleusercontent.com";
-         //provider.ClientSecret = "4nJPnk5fE8yJM_HNUNQEEvjU";
-         //service = new CalendarService(new OAuth2Authenticator<NativeApplicationClient>(provider, GetAuthentication));
-         //service.Key = "AIzaSyDRGFSAyMGondZKR8fww1RtRARYtCbBC4k";
+         try
+         {
+            // obtain the user's credentials
+            Google.Apis.Auth.OAuth2.UserCredential user_credential =
+               Google.Apis.Auth.OAuth2.GoogleWebAuthorizationBroker.AuthorizeAsync(
+                  new Google.Apis.Auth.OAuth2.ClientSecrets
+                  {
+                     ClientId = "857287834886-tau9nuakoamjctkm3plbqeojjrlmn140.apps.googleusercontent.com",
+                     ClientSecret = "Gb5q1srU74At1erFyLQBKxXm"
+                  },
+                  new [] { Google.Apis.Calendar.v3.CalendarService.Scope.Calendar },
+                  user,
+                  System.Threading.CancellationToken.None).Result;
+
+            if (user_credential != null)
+            {
+               // init the calendar service
+               service =
+                  new Google.Apis.Calendar.v3.CalendarService(
+                     new Google.Apis.Services.BaseClientService.Initializer()
+                     {
+                        HttpClientInitializer = user_credential,
+                        ApplicationName = "GoogleOutlookCalendarSync"
+                     });
+
+               // save the refresh token
+               // this is not needed anymore, as the optional data store is a file store located
+               // at Google.Apis.Auth under the user's Environment.SpecialFolder.ApplicationData
+               // keep this for backwards compatibility, as it may be needed in the future
+               Settings.Instance.RefreshToken = user_credential.Token.RefreshToken;
+
+               // export the settings to keep backwards compatibility
+               XMLManager.export(Settings.Instance, MainForm.FILENAME);
+            }
+         }
+         catch (System.Exception)
+         {
+            // something went very wrong so the service is dead
+            service = null;
+         }
+
+         // indicate if the service was initialized
+         return service != null ? true : false;
       }
-
-      // TODO: needs refactored to work correctly...
-      //private static IAuthorizationState GetAuthentication(NativeApplicationClient arg)
-      //  {
-      //      // Get the auth URL:
-      //      IAuthorizationState state = new AuthorizationState(new[] { CalendarService.Scopes.Calendar.GetStringValue() });
-      //      state.Callback = new Uri(NativeApplicationClient.OutOfBandCallbackUrl);
-      //      state.RefreshToken = Settings.Instance.RefreshToken;
-      //      Uri authUri = arg.RequestUserAuthorization(state);
-
-      //      IAuthorizationState result = null;
-
-      //    if (state.RefreshToken == "")
-      //    {
-      //          // Request authorization from the user (by opening a browser window):
-      //          Process.Start(authUri.ToString());
-
-      //          EnterAuthorizationCode eac = new EnterAuthorizationCode();
-      //          if (eac.ShowDialog() == DialogResult.OK)
-      //          {
-      //              // Retrieve the access/refresh tokens by using the authorization code:
-      //              result = arg.ProcessUserAuthorization(eac.authcode, state);
-
-      //              //save the refresh token for future use
-      //              Settings.Instance.RefreshToken = result.RefreshToken;
-      //              XMLManager.export(Settings.Instance, MainForm.FILENAME);
-
-      //              return result;
-      //          } else {
-      //              return null;
-      //          }		        
-      //    } else {
-      //        arg.RefreshToken(state, null);
-      //        result = state;
-      //        return result;
-      //    }
-
-      //  }
 
       public List<MyCalendarListEntry> getCalendars()
       {
          CalendarList request = null;
          try
          {
-            // TODO: needs refactored to work correctly...
-            // request = service.CalendarList.List().Fetch();
+            request = service.CalendarList.List().Execute();
          }
          catch (Exception ex)
          {
@@ -100,7 +100,7 @@ namespace OutlookGoogleSync
             List<MyCalendarListEntry> result = new List<MyCalendarListEntry>();
             foreach (CalendarListEntry cle in request.Items)
             {
-               result.Add(new MyCalendarListEntry(cle));
+               result.Add(new MyCalendarListEntry(((Google.Apis.Auth.OAuth2.UserCredential)service.HttpClientInitializer).UderId, cle));
             }
             return result;
          }
@@ -142,8 +142,7 @@ namespace OutlookGoogleSync
 
          try
          {
-            // TODO: needs refactored to work correctly...
-            // request = service.Events.Delete(Settings.Instance.UseGoogleCalendar.Id, e.Id).Fetch();
+            request = service.Events.Delete(Settings.Instance.UseGoogleCalendar.Id, e.Id).Execute();
          }
          catch (Exception ex)
          {
@@ -156,8 +155,7 @@ namespace OutlookGoogleSync
       {
          try
          {
-            // TODO: needs refactored to work correctly...
-            // var result = service.Events.Insert(e, Settings.Instance.UseGoogleCalendar.Id).Fetch();
+            var result = service.Events.Insert(e, Settings.Instance.UseGoogleCalendar.Id).Execute();
          }
          catch (Exception ex)
          {

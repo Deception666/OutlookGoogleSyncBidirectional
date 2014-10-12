@@ -12,16 +12,17 @@ namespace OutlookGoogleSync
    {
       public string Id = "";
       public string Name = "";
-
+      public string User = "";
 
       public MyCalendarListEntry()
       {
       }
 
-      public MyCalendarListEntry(CalendarListEntry init)
+      public MyCalendarListEntry(string user, CalendarListEntry init)
       {
          Id = init.Id;
          Name = init.Summary;
+         User = user;
       }
 
       public override string ToString()
