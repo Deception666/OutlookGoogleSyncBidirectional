@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Please enter a user account to bind the authentication to.
+
+NOTE: The user account entered does not have to be of the form 'someone@gmail.com'.  The account name
+entered here will be bound to the logged in user of the default web browser when granting permissions to this
+application.  This is a mechanism to allow for different google accounts to be bound to different local account
+names.  It is recommended to use the same gmail account name here as to the one that will be authenticated
+against.</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

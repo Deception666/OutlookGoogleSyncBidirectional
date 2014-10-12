@@ -32,11 +32,12 @@
          this.userAccountTextBox = new System.Windows.Forms.TextBox();
          this.OK = new System.Windows.Forms.Button();
          this.Cancel = new System.Windows.Forms.Button();
+         this.label1 = new System.Windows.Forms.Label();
          this.SuspendLayout();
          // 
          // userAccountTextBox
          // 
-         this.userAccountTextBox.Location = new System.Drawing.Point(12, 12);
+         this.userAccountTextBox.Location = new System.Drawing.Point(12, 104);
          this.userAccountTextBox.Name = "userAccountTextBox";
          this.userAccountTextBox.Size = new System.Drawing.Size(350, 20);
          this.userAccountTextBox.TabIndex = 0;
@@ -46,7 +47,7 @@
          // OK
          // 
          this.OK.DialogResult = System.Windows.Forms.DialogResult.OK;
-         this.OK.Location = new System.Drawing.Point(368, 10);
+         this.OK.Location = new System.Drawing.Point(368, 102);
          this.OK.Name = "OK";
          this.OK.Size = new System.Drawing.Size(75, 23);
          this.OK.TabIndex = 1;
@@ -57,7 +58,7 @@
          // Cancel
          // 
          this.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-         this.Cancel.Location = new System.Drawing.Point(449, 10);
+         this.Cancel.Location = new System.Drawing.Point(449, 102);
          this.Cancel.Name = "Cancel";
          this.Cancel.Size = new System.Drawing.Size(75, 23);
          this.Cancel.TabIndex = 2;
@@ -65,11 +66,22 @@
          this.Cancel.UseVisualStyleBackColor = true;
          this.Cancel.Click += new System.EventHandler(this.Cancel_Click);
          // 
+         // label1
+         // 
+         this.label1.AutoSize = true;
+         this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+         this.label1.Location = new System.Drawing.Point(0, 0);
+         this.label1.Name = "label1";
+         this.label1.Size = new System.Drawing.Size(524, 91);
+         this.label1.TabIndex = 3;
+         this.label1.Text = resources.GetString("label1.Text");
+         // 
          // UserAccountForm
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.ClientSize = new System.Drawing.Size(531, 41);
+         this.ClientSize = new System.Drawing.Size(531, 128);
+         this.Controls.Add(this.label1);
          this.Controls.Add(this.Cancel);
          this.Controls.Add(this.OK);
          this.Controls.Add(this.userAccountTextBox);
@@ -92,5 +104,6 @@
         private System.Windows.Forms.TextBox userAccountTextBox;
         private System.Windows.Forms.Button OK;
         private System.Windows.Forms.Button Cancel;
+        private System.Windows.Forms.Label label1;
     }
 }
