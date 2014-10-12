@@ -34,57 +34,59 @@ namespace OutlookGoogleSync
 	    
 		public GoogleCalendar()
 		{
-            var provider = new NativeApplicationClient(GoogleAuthenticationServer.Description);
-            provider.ClientIdentifier = "662204240419.apps.googleusercontent.com";
-            provider.ClientSecret = "4nJPnk5fE8yJM_HNUNQEEvjU";
-            service = new CalendarService(new OAuth2Authenticator<NativeApplicationClient>(provider, GetAuthentication));
-            service.Key = "AIzaSyDRGFSAyMGondZKR8fww1RtRARYtCbBC4k";
+         // TODO: needs refactored to work correctly...
+            //var provider = new NativeApplicationClient(GoogleAuthenticationServer.Description);
+            //provider.ClientIdentifier = "662204240419.apps.googleusercontent.com";
+            //provider.ClientSecret = "4nJPnk5fE8yJM_HNUNQEEvjU";
+            //service = new CalendarService(new OAuth2Authenticator<NativeApplicationClient>(provider, GetAuthentication));
+            //service.Key = "AIzaSyDRGFSAyMGondZKR8fww1RtRARYtCbBC4k";
 		}
 		
-				
-		private static IAuthorizationState GetAuthentication(NativeApplicationClient arg)
-        {
-            // Get the auth URL:
-            IAuthorizationState state = new AuthorizationState(new[] { CalendarService.Scopes.Calendar.GetStringValue() });
-            state.Callback = new Uri(NativeApplicationClient.OutOfBandCallbackUrl);
-            state.RefreshToken = Settings.Instance.RefreshToken;
-            Uri authUri = arg.RequestUserAuthorization(state);
+				// TODO: needs refactored to work correctly...
+      //private static IAuthorizationState GetAuthentication(NativeApplicationClient arg)
+      //  {
+      //      // Get the auth URL:
+      //      IAuthorizationState state = new AuthorizationState(new[] { CalendarService.Scopes.Calendar.GetStringValue() });
+      //      state.Callback = new Uri(NativeApplicationClient.OutOfBandCallbackUrl);
+      //      state.RefreshToken = Settings.Instance.RefreshToken;
+      //      Uri authUri = arg.RequestUserAuthorization(state);
             
-            IAuthorizationState result = null;
+      //      IAuthorizationState result = null;
             
-		    if (state.RefreshToken == "")
-		    {
-                // Request authorization from the user (by opening a browser window):
-                Process.Start(authUri.ToString());
+      //    if (state.RefreshToken == "")
+      //    {
+      //          // Request authorization from the user (by opening a browser window):
+      //          Process.Start(authUri.ToString());
                 
-                EnterAuthorizationCode eac = new EnterAuthorizationCode();
-                if (eac.ShowDialog() == DialogResult.OK)
-                {
-                    // Retrieve the access/refresh tokens by using the authorization code:
-                    result = arg.ProcessUserAuthorization(eac.authcode, state);
+      //          EnterAuthorizationCode eac = new EnterAuthorizationCode();
+      //          if (eac.ShowDialog() == DialogResult.OK)
+      //          {
+      //              // Retrieve the access/refresh tokens by using the authorization code:
+      //              result = arg.ProcessUserAuthorization(eac.authcode, state);
                     
-                    //save the refresh token for future use
-                    Settings.Instance.RefreshToken = result.RefreshToken;
-                    XMLManager.export(Settings.Instance, MainForm.FILENAME);
+      //              //save the refresh token for future use
+      //              Settings.Instance.RefreshToken = result.RefreshToken;
+      //              XMLManager.export(Settings.Instance, MainForm.FILENAME);
                     
-                    return result;
-                } else {
-                    return null;
-                }		        
-		    } else {
-		        arg.RefreshToken(state, null);
-		        result = state;
-		        return result;
-		    }
+      //              return result;
+      //          } else {
+      //              return null;
+      //          }		        
+      //    } else {
+      //        arg.RefreshToken(state, null);
+      //        result = state;
+      //        return result;
+      //    }
         
-        }
+      //  }
 
         public List<MyCalendarListEntry> getCalendars()
         {
             CalendarList request = null;  
             try
             {
-                request = service.CalendarList.List().Fetch();
+               // TODO: needs refactored to work correctly...
+                // request = service.CalendarList.List().Fetch();
             }
             catch (Exception ex)
             {
@@ -116,10 +118,10 @@ namespace OutlookGoogleSync
             {
                 EventsResource.ListRequest lr = service.Events.List(Settings.Instance.UseGoogleCalendar.Id);
                 
-                lr.TimeMin = GoogleTimeFrom(DateTime.Now.AddDays(-Settings.Instance.DaysInThePast));
-                lr.TimeMax = GoogleTimeFrom(DateTime.Now.AddDays(+Settings.Instance.DaysInTheFuture+1));
+                lr.TimeMin = DateTime.Now.AddDays(-Settings.Instance.DaysInThePast);
+                lr.TimeMax = DateTime.Now.AddDays(+Settings.Instance.DaysInTheFuture+1);
                 
-                request = lr.Fetch();
+                // request = lr.Fetch();
             }
             catch (Exception ex)
             {
@@ -140,7 +142,8 @@ namespace OutlookGoogleSync
             
             try
             {
-                request = service.Events.Delete(Settings.Instance.UseGoogleCalendar.Id, e.Id).Fetch();
+               // TODO: needs refactored to work correctly...
+                // request = service.Events.Delete(Settings.Instance.UseGoogleCalendar.Id, e.Id).Fetch();
             }
             catch (Exception ex)
             {
@@ -153,7 +156,8 @@ namespace OutlookGoogleSync
 		{
             try
             {
-                var result = service.Events.Insert(e, Settings.Instance.UseGoogleCalendar.Id).Fetch();
+               // TODO: needs refactored to work correctly...
+                // var result = service.Events.Insert(e, Settings.Instance.UseGoogleCalendar.Id).Fetch();
             }
             catch (Exception ex)
             {

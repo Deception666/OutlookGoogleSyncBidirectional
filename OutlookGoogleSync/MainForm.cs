@@ -326,8 +326,8 @@ namespace OutlookGoogleSync
                     }
                     else
                     {
-                        ev.Start.DateTime = GoogleCalendar.Instance.GoogleTimeFrom(ai.Start);
-                        ev.End.DateTime = GoogleCalendar.Instance.GoogleTimeFrom(ai.End);
+                        ev.Start.DateTime = ai.Start;
+                        ev.End.DateTime = ai.End;
                     }
                     ev.Summary = ai.Subject;
                     if (cbAddDescription.Checked) ev.Description = ai.Body;
@@ -421,8 +421,8 @@ namespace OutlookGoogleSync
         }
         public string signature(Event ev)
         {
-            if (ev.Start.DateTime==null) ev.Start.DateTime = GoogleCalendar.Instance.GoogleTimeFrom(DateTime.Parse(ev.Start.Date));
-            if (ev.End.DateTime==null) ev.End.DateTime = GoogleCalendar.Instance.GoogleTimeFrom(DateTime.Parse(ev.End.Date));
+            if (ev.Start.DateTime==null) ev.Start.DateTime = DateTime.Parse(ev.Start.Date);
+            if (ev.End.DateTime==null) ev.End.DateTime = DateTime.Parse(ev.End.Date);
             return (ev.Start.DateTime + ";" + ev.End.DateTime + ";" + ev.Summary + ";" + ev.Location).Trim();
         }
         
