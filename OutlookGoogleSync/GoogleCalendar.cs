@@ -122,7 +122,17 @@ namespace OutlookGoogleSync
             lr.TimeMin = DateTime.Now.AddDays(-Settings.Instance.DaysInThePast);
             lr.TimeMax = DateTime.Now.AddDays(+Settings.Instance.DaysInTheFuture + 1);
 
-            request = lr.Execute();
+            do
+            {
+               // request the current page of information
+               request = lr.Execute();
+
+               // add to the results the current items
+               result.AddRange(request.Items);
+
+               // request the next page
+               lr.PageToken = request.NextPageToken;
+            } while (lr.PageToken != null);
          }
          catch (System.Exception ex)
          {
@@ -130,11 +140,6 @@ namespace OutlookGoogleSync
             throw ex;
          }
 
-         if (request != null)
-         {
-            // TODO: NEED TO HANDLE THE NEXT PAGE TOKEN TO HANDLE ITEM COUNTS GREATER THAN 250
-            if (request.Items != null) result.AddRange(request.Items);
-         }
          return result;
       }
 
