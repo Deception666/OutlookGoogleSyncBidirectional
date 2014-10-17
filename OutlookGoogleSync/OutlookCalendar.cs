@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-//using Outlook = Microsoft.Office.Interop.Outlook;
 using Microsoft.Office.Interop.Outlook;
+using Google.Apis.Calendar.v3.Data;
 
 
 namespace OutlookGoogleSync
@@ -22,20 +22,22 @@ namespace OutlookGoogleSync
          }
       }
 
-      public MAPIFolder UseOutlookCalendar;
+      private Application OutlookApplication;
+      private NameSpace OutlookNamespace;
+      private MAPIFolder OutlookFolder;
 
       public OutlookCalendar()
       {
 
          // Create the Outlook application.
-         Application oApp = new Application();
+         OutlookApplication = new Application();
 
          // Get the NameSpace and Logon information.
          // Outlook.NameSpace oNS = (Outlook.NameSpace)oApp.GetNamespace("mapi");
-         NameSpace oNS = oApp.GetNamespace("mapi");
+         OutlookNamespace = OutlookApplication.GetNamespace("mapi");
 
          //Log on by using a dialog box to choose the profile.
-         oNS.Logon("", "", true, true);
+         OutlookNamespace.Logon("", "", true, true);
 
          //Alternate logon method that uses a specific profile.
          // If you use this logon method, 
@@ -43,26 +45,49 @@ namespace OutlookGoogleSync
          //oNS.Logon("YourValidProfile", Missing.Value, false, true); 
 
          // Get the Calendar folder.
-         UseOutlookCalendar = oNS.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
+         OutlookFolder = OutlookNamespace.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
 
 
          //Show the item to pause.
          //oAppt.Display(true);
 
          // Done. Log off.
-         oNS.Logoff();
+         OutlookNamespace.Logoff();
       }
 
 
       public void Reset()
       {
+         Release();
+
          instance = new OutlookCalendar();
       }
 
+      public void Release( )
+      {
+         // quit the application
+         ((_Application)OutlookApplication).Quit();
+         // release the instance
+         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookFolder);
+         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookNamespace);
+         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookApplication.Session);
+         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookApplication);
+
+         OutlookApplication = null;
+         OutlookNamespace = null;
+         OutlookFolder = null;
+         instance = null;
+
+         // http://msdn.microsoft.com/en-us/library/aa679807%28office.11%29.aspx#officeinteroperabilitych2_part2_gc
+         GC.Collect();
+         GC.WaitForPendingFinalizers();
+         GC.Collect();
+         GC.WaitForPendingFinalizers(); 
+      }
 
       public List<AppointmentItem> getCalendarEntries()
       {
-         Items OutlookItems = UseOutlookCalendar.Items;
+         Items OutlookItems = OutlookFolder.Items;
          if (OutlookItems != null)
          {
             List<AppointmentItem> result = new List<AppointmentItem>();
@@ -79,7 +104,7 @@ namespace OutlookGoogleSync
       {
          List<AppointmentItem> result = new List<AppointmentItem>();
 
-         Items OutlookItems = UseOutlookCalendar.Items;
+         Items OutlookItems = OutlookFolder.Items;
          OutlookItems.Sort("[Start]", Type.Missing);
          OutlookItems.IncludeRecurrences = true;
 
@@ -106,7 +131,127 @@ namespace OutlookGoogleSync
          return result;
       }
 
+      public bool deleteCalendarEntry( AppointmentItem ai )
+      {
+         ai.Delete();
 
+         return true;
+      }
+
+      public AppointmentItem addEntry( Event e, bool add_description, bool add_reminders, bool add_attendees )
+      {
+         AppointmentItem result = null;
+
+         try
+         {
+            result = (AppointmentItem)OutlookApplication.CreateItem(OlItemType.olAppointmentItem);
+
+            ModifyEvent(result, e, add_description, add_reminders, add_attendees);
+
+            result.Save();
+         }
+         catch (System.Exception ex)
+         {
+            throw ex;
+         }
+
+         return result;
+      }
+
+      public AppointmentItem updateEntry( AppointmentItem ai, Event e, bool add_description, bool add_reminders, bool add_attendees )
+      {
+         ModifyEvent(ai, e, add_description, add_reminders, add_attendees);
+
+         ai.Save();
+
+         return ai;
+      }
+
+      private void ModifyEvent( AppointmentItem ai, Event e, bool add_description, bool add_reminders, bool add_attendees )
+      {
+         ai.Start = new DateTime();
+         ai.End = new DateTime();
+
+         if (e.Start.Date != null && e.End.Date != null)
+         {
+            ai.AllDayEvent = true;
+            ai.Start = DateTime.Parse(e.Start.Date);
+            ai.End = DateTime.Parse(e.End.Date);
+         }
+         else
+         {
+            ai.AllDayEvent = false;
+            ai.Start = e.Start.DateTime.Value;
+            ai.End = e.End.DateTime.Value;
+         }
+
+         ai.Subject = e.Summary;
+         if (add_description) ai.Body = e.Description;
+         ai.Location = e.Location;
+
+         // consider the reminder set in google
+         if (add_reminders && e.Reminders != null && e.Reminders.Overrides != null)
+         {
+            if (e.Reminders.Overrides.Count > 0)
+            {
+               ai.ReminderMinutesBeforeStart = e.Reminders.Overrides[0].Minutes.Value;
+            }
+         }
+
+         if (add_attendees)
+         {
+            ai.Body += Environment.NewLine;
+            ai.Body += Environment.NewLine + "==============================================";
+            ai.Body += Environment.NewLine + "Added by OutlookGoogleSync:";
+            ai.Body += Environment.NewLine + "ORGANIZER: " + Environment.NewLine + e.Organizer.DisplayName;
+            ai.Body += Environment.NewLine + "REQUIRED: " + Environment.NewLine + splitAttendees(e.Attendees, true);
+            ai.Body += Environment.NewLine + "OPTIONAL: " + Environment.NewLine + splitAttendees(e.Attendees, false);
+            ai.Body += Environment.NewLine + "==============================================";
+         }
+
+         // make sure to tag the user property of the google id
+         UserProperty oitem_google_prop = ai.UserProperties.Find(EventPropertyKey);
+
+         if (oitem_google_prop != null)
+         {
+            oitem_google_prop.Value = e.Id;
+         }
+         else
+         {
+            ai.UserProperties.Add(EventPropertyKey, OlUserPropertyType.olText).Value = e.Id;
+         }
+
+         // make sure to tag the private property of the outlook id
+         if (e.ExtendedProperties == null)
+         {
+            e.ExtendedProperties = new Event.ExtendedPropertiesData();
+            e.ExtendedProperties.Private = new Dictionary< string, string >();
+         }
+
+         e.ExtendedProperties.Private[EventPropertyKey] = ai.GlobalAppointmentID;
+      }
+
+      // one attendee per line
+      public string splitAttendees( IList< EventAttendee > attendees, bool process_required )
+      {
+         string attendees_per_line = "";
+
+         if (attendees != null)
+         {
+            foreach (var attendee in attendees)
+            {
+               if (process_required && !attendee.Optional.Value || !process_required && attendee.Optional.Value)
+               {
+                  attendees_per_line += attendee.DisplayName.Trim() + Environment.NewLine;
+               }
+            }
+         }
+
+         return attendees_per_line;
+      }
+
+      // defines the property name for associating outlook events to google events
+      public string EventPropertyKey { get; set; }
 
    }
 }

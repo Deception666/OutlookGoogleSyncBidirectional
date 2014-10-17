@@ -209,6 +209,9 @@ namespace OutlookGoogleSync
 
       void SyncNow_Click(object sender, EventArgs e)
       {
+         // update the property key value before doing the sync
+         UpdateEventPropertyKey();
+
          bSyncNow.Enabled = false;
 
          lNextSync.Text = "Next scheduled sync:\n     In progress...";
@@ -237,9 +240,195 @@ namespace OutlookGoogleSync
             setNextSync(5);
          }
 
+         if (!cbSyncEveryHour.Checked)
+         {
+            // close the outlook calendar instance so not to always be logged in
+            OutlookCalendar.Instance.Release();
+         }
+
          bSyncNow.Enabled = true;
       }
 
+      void synchronize( List< AppointmentItem > outlook_items, List< Event > google_items )
+      {
+         // indicates the number of entries added / updated / removed....
+         uint google_entries_added = 0;
+         uint google_entries_updated = 0;
+         uint google_entries_removed = 0;
+         uint outlook_entries_added = 0;
+         uint outlook_entries_updated = 0;
+         uint outlook_entries_removed = 0;
+
+         // first synchronize outlook -> google
+
+         // run over all the office items and add or update on google
+         for (int i = outlook_items.Count - 1; i >= 0; --i)
+         {
+            // obtain a reference to the outlook item...
+            var oitem = outlook_items[i];
+
+            // determine first if this outlook item is associated with a google calendar item...
+            UserProperty oitem_google_prop = oitem.UserProperties.Find(EventPropertyKey);
+
+            if (oitem_google_prop == null)
+            {
+               // give some indication of what will take place
+               logboxout("Creating Google event: " + oitem.Subject);
+
+               // the property does not exist... this mean that google calendar
+               // does not have this outlook entry...  after this call, the outlook item
+               // and the google item should be tied together by the use of properties...
+               var gitem = GoogleCalendar.Instance.addEntry(oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+
+               // updated the stats
+               ++google_entries_added;
+            }
+            else
+            {
+               // the property exists, so we need to determine if the event should be updated
+               // first, find the event in the list of google items...
+               Event gitem = null;
+               foreach (var g in google_items)
+               {
+                  if (oitem_google_prop.Value == g.Id)
+                  {
+                     gitem = g; break;
+                  }
+               }
+
+               if (gitem == null)
+               {
+                  // give some indication of what will take place
+                  logboxout("Removing Outlook event: " + oitem.Subject);
+
+                  // the item does not exist, so it was removed from google calendar
+                  // since it was removed from google, remove it from outlook
+                  OutlookCalendar.Instance.deleteCalendarEntry(oitem);
+
+                  // outlook item can no longer be used after it is deleted
+                  outlook_items.RemoveAt(i);
+
+                  // update the stats
+                  ++outlook_entries_removed;
+               }
+               else
+               {
+                  // the item does exist...
+                  // determine if the event should be updated...
+                  if (signature(oitem) != signature(gitem) && oitem.LastModificationTime > gitem.Updated)
+                  {
+                     // give some indication of what will take place
+                     logboxout("Updating Google event: " + gitem.Summary);
+
+                     // update the event based on the outlook item
+                     GoogleCalendar.Instance.updateEntry(gitem, oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+
+                     // this google item has been processed
+                     google_items.Remove(gitem);
+
+                     // update the status
+                     ++google_entries_updated;
+                  }
+               }
+            }
+         }
+
+         // second synchronize google -> outlook
+
+         // run over all the google items and add or update on outlook
+         for (int i = google_items.Count - 1; i >= 0; --i)
+         {
+            // obtain a reference to the google item...
+            var gitem = google_items[i];
+
+            // determine first if this google item is associated with an outlook calendar item...
+            string outlook_id = null;
+            if (gitem.ExtendedProperties != null &&
+                gitem.ExtendedProperties.Private != null &&
+                gitem.ExtendedProperties.Private.ContainsKey(EventPropertyKey))
+            {
+               outlook_id = gitem.ExtendedProperties.Private[EventPropertyKey];
+            }
+
+            if (outlook_id == null)
+            {
+               // give some indication of what will take place
+               logboxout("Creating Outlook event: " + gitem.Summary);
+
+               // the property does not exist... this means that the outlook calendar
+               // does not have this google entry...  after this call, the outlook item
+               // and the google item should be tied together by the use of properties...
+               var oitem = OutlookCalendar.Instance.addEntry(gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+
+               // the google currently does not have an updated id... this needs to be reflected on the server...
+               GoogleCalendar.Instance.updateEntry(gitem);
+
+               // update the stats
+               ++outlook_entries_added;
+            }
+            else
+            {
+               // the property exists, so we need to determine if the event should be updated
+               // first, find the event in the list of outlook items...
+               AppointmentItem oitem = null;
+               foreach (var o in outlook_items)
+               {
+                  if (outlook_id == o.GlobalAppointmentID)
+                  {
+                     oitem = o; break;
+                  }
+               }
+
+               if (oitem == null)
+               {
+                  // give some indication of what will take place
+                  logboxout("Removing Google event: " + gitem.Summary);
+
+                  // the item does not exist, so it was removed from outlook calendar
+                  // since it was removed from outlook, remove it from google
+                  GoogleCalendar.Instance.deleteCalendarEntry(gitem);
+
+                  // update the stats
+                  ++google_entries_removed;
+               }
+               else
+               {
+                  // this outlook item is about to be processed... no matter the action
+                  // taken, we can remove it from the list of items, so as not
+                  // to need to look at it again in future iterations...
+                  outlook_items.Remove(oitem);
+
+                  // the item does exist...
+                  // determine if the event should be updated...
+                  if (signature(gitem) != signature(oitem) && gitem.Updated > oitem.LastModificationTime)
+                  {
+                     // give some indication of what will take place
+                     logboxout("Updating Outlook event: " + oitem.Subject);
+
+                     // update the event based on the google item
+                     OutlookCalendar.Instance.updateEntry(oitem, gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+
+                     // update the status
+                     ++outlook_entries_updated;
+                  }
+               }
+            }
+         }
+
+         // clear out both lists... these items have been processed...
+         outlook_items.Clear();
+         google_items.Clear();
+
+         // summarize the changes made
+         logboxout("--------------------------------------------------");
+         logboxout("Google entries added: " + google_entries_added);
+         logboxout("Google entries updated: " + google_entries_updated);
+         logboxout("Google entries removed: " + google_entries_removed);
+         logboxout("");
+         logboxout("Outlook entries added: " + outlook_entries_added);
+         logboxout("Outlook entries updated: " + outlook_entries_updated);
+         logboxout("Outlook entries removed: " + outlook_entries_removed);
+      }
 
       Boolean synchronize()
       {
@@ -301,166 +490,28 @@ namespace OutlookGoogleSync
          logboxout("Found " + GoogleEntries.Count + " Google Calendar Entries.");
          logboxout("--------------------------------------------------");
 
+         // synchronize both outlook and google calendars
+         synchronize(OutlookEntries, GoogleEntries);
 
-         List<Event> GoogleEntriesToBeDeleted = IdentifyGoogleEntriesToBeDeleted(OutlookEntries, GoogleEntries);
-         if (cbCreateFiles.Checked)
-         {
-            TextWriter tw = new StreamWriter("export_to_be_deleted.txt");
-            foreach (Event ev in GoogleEntriesToBeDeleted)
-            {
-               tw.WriteLine(signature(ev));
-            }
-            tw.Close();
-         }
-         logboxout(GoogleEntriesToBeDeleted.Count + " Google Calendar Entries to be deleted.");
-
-         //OutlookEntriesToBeCreated ...in Google!
-         List<AppointmentItem> OutlookEntriesToBeCreated = IdentifyOutlookEntriesToBeCreated(OutlookEntries, GoogleEntries);
-         if (cbCreateFiles.Checked)
-         {
-            TextWriter tw = new StreamWriter("export_to_be_created.txt");
-            foreach (AppointmentItem ai in OutlookEntriesToBeCreated)
-            {
-               tw.WriteLine(signature(ai));
-            }
-            tw.Close();
-         }
-         logboxout(OutlookEntriesToBeCreated.Count + " Entries to be created in Google.");
-
-
-         if (GoogleEntriesToBeDeleted.Count > 0)
-         {
-            logboxout("--------------------------------------------------");
-            logboxout("Deleting " + GoogleEntriesToBeDeleted.Count + " Google Calendar Entries...");
-            try
-            {
-               foreach (Event ev in GoogleEntriesToBeDeleted) GoogleCalendar.Instance.deleteCalendarEntry(ev);
-            }
-            catch (System.Exception ex)
-            {
-               logboxout("Unable to delete obsolete entries out to the Google Calendar. The folowing error occurs:");
-               logboxout(ex.Message + "\r\n => Check your network connection.");
-               return false;
-            }
-            logboxout("Done.");
-         }
-
-         if (OutlookEntriesToBeCreated.Count > 0)
-         {
-            logboxout("--------------------------------------------------");
-            logboxout("Creating " + OutlookEntriesToBeCreated.Count + " Entries in Google...");
-            foreach (AppointmentItem ai in OutlookEntriesToBeCreated)
-            {
-               Event ev = new Event();
-
-               ev.Start = new EventDateTime();
-               ev.End = new EventDateTime();
-
-               if (ai.AllDayEvent)
-               {
-                  ev.Start.Date = ai.Start.ToString("yyyy-MM-dd");
-                  ev.End.Date = ai.End.ToString("yyyy-MM-dd");
-               }
-               else
-               {
-                  ev.Start.DateTime = ai.Start;
-                  ev.End.DateTime = ai.End;
-               }
-               ev.Summary = ai.Subject;
-               if (cbAddDescription.Checked) ev.Description = ai.Body;
-               ev.Location = ai.Location;
-
-
-               //consider the reminder set in Outlook
-               if (cbAddReminders.Checked && ai.ReminderSet)
-               {
-                  ev.Reminders = new Event.RemindersData();
-                  ev.Reminders.UseDefault = false;
-                  EventReminder reminder = new EventReminder();
-                  reminder.Method = "popup";
-                  reminder.Minutes = ai.ReminderMinutesBeforeStart;
-                  ev.Reminders.Overrides = new List<EventReminder>();
-                  ev.Reminders.Overrides.Add(reminder);
-               }
-
-
-               if (cbAddAttendees.Checked)
-               {
-                  ev.Description += Environment.NewLine;
-                  ev.Description += Environment.NewLine + "==============================================";
-                  ev.Description += Environment.NewLine + "Added by OutlookGoogleSync:" + Environment.NewLine;
-                  ev.Description += Environment.NewLine + "ORGANIZER: " + Environment.NewLine + ai.Organizer + Environment.NewLine;
-                  ev.Description += Environment.NewLine + "REQUIRED: " + Environment.NewLine + splitAttendees(ai.RequiredAttendees) + Environment.NewLine;
-                  ev.Description += Environment.NewLine + "OPTIONAL: " + Environment.NewLine + splitAttendees(ai.OptionalAttendees);
-                  ev.Description += Environment.NewLine + "==============================================";
-               }
-               try
-               {
-                  GoogleCalendar.Instance.addEntry(ev);
-               }
-               catch (System.Exception ex)
-               {
-                  logboxout("Unable to add new entries into the Google Calendar. The folowing error occurs:");
-                  logboxout(ex.Message + "\r\n => Check your network connection.");
-                  return false;
-               }
-            }
-
-            logboxout("Done.");
-         }
          return true;
-      }
-
-      //one attendee per line
-      public string splitAttendees(string attendees)
-      {
-         if (attendees == null) return "";
-         string[] tmp1 = attendees.Split(';');
-         for (int i = 0; i < tmp1.Length; i++) tmp1[i] = tmp1[i].Trim();
-         return String.Join(Environment.NewLine, tmp1);
-      }
-
-
-      public List<Event> IdentifyGoogleEntriesToBeDeleted(List<AppointmentItem> outlook, List<Event> google)
-      {
-         List<Event> result = new List<Event>();
-         foreach (Event g in google)
-         {
-            bool found = false;
-            foreach (AppointmentItem o in outlook)
-            {
-               if (signature(g) == signature(o)) found = true;
-            }
-            if (!found) result.Add(g);
-         }
-         return result;
-      }
-
-      public List<AppointmentItem> IdentifyOutlookEntriesToBeCreated(List<AppointmentItem> outlook, List<Event> google)
-      {
-         List<AppointmentItem> result = new List<AppointmentItem>();
-         foreach (AppointmentItem o in outlook)
-         {
-            bool found = false;
-            foreach (Event g in google)
-            {
-               if (signature(g) == signature(o)) found = true;
-            }
-            if (!found) result.Add(o);
-         }
-         return result;
       }
 
       //creates a standardized summary string with the key attributes of a calendar entry for comparison
       public string signature(AppointmentItem ai)
       {
-         return (GoogleCalendar.Instance.GoogleTimeFrom(ai.Start) + ";" + GoogleCalendar.Instance.GoogleTimeFrom(ai.End) + ";" + ai.Subject + ";" + ai.Location).Trim();
+         return (ai.Start + ";" + ai.End + ";" + ai.Subject + ";" + ai.Location).Trim();
       }
       public string signature(Event ev)
       {
-         if (ev.Start.DateTime == null) ev.Start.DateTime = DateTime.Parse(ev.Start.Date);
-         if (ev.End.DateTime == null) ev.End.DateTime = DateTime.Parse(ev.End.Date);
-         return (ev.Start.DateTime + ";" + ev.End.DateTime + ";" + ev.Summary + ";" + ev.Location).Trim();
+         string start_time = ev.Start.Date != null ?
+                             DateTime.Parse(ev.Start.Date).ToString() :
+                             ev.Start.DateTime.ToString();
+
+         string end_time = ev.End.Date != null ?
+                           DateTime.Parse(ev.End.Date).ToString() :
+                           ev.End.DateTime.ToString();
+
+         return (start_time + ";" + end_time + ";" + ev.Summary + ";" + ev.Location).Trim();
       }
 
       void logboxout(string s)
@@ -570,12 +621,33 @@ namespace OutlookGoogleSync
          System.Windows.Forms.Application.Exit();
       }
 
-
-
       void LinkLabel1LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
       {
          System.Diagnostics.Process.Start(linkLabel1.Text);
       }
 
+      private string EventPropertyKey { get; set; }
+
+      private void UpdateEventPropertyKey( )
+      {
+         if (Settings.Instance.UseGoogleCalendar.Id == null)
+         {
+            throw new System.Exception("Unable to set EventPropertyKey!!!  Obtain Google calendars first!!!");
+         }
+         else
+         {
+            // the string cannot have '[', ']', '_', or '#'
+            string key = Settings.Instance.UseGoogleCalendar.Id;
+            key = key.Replace("[", "").Replace("]", "").Replace("_", "").Replace("#", "");
+
+            // the string cannot exceed 45 characters in length (google restriction)
+            key = key.Substring(0, key.Length > 44 ? 44 : key.Length);
+
+            // set the event properties for all parties
+            EventPropertyKey = key;
+            GoogleCalendar.Instance.EventPropertyKey = key;
+            OutlookCalendar.Instance.EventPropertyKey = key;
+         }
+      }
    }
 }
