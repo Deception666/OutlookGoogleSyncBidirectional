@@ -69,6 +69,9 @@ namespace OutlookGoogleSync
          cbAddAttendees.Checked = Settings.Instance.AddAttendeesToDescription;
          cbAddReminders.Checked = Settings.Instance.AddReminders;
          cbCreateFiles.Checked = Settings.Instance.CreateTextFiles;
+         outlookAutoLogonCheckBox.Checked = Settings.Instance.OutlookAutoLogonEnabled;
+         outlookAutoLogonTextBox.Text = Settings.Instance.OutlookAutoLogonProfileName;
+         outlookAutoLogonPwdTextBox.Text = Settings.Instance.OutlookAutoLogonProfilePassword;
 
          // init the calendar service if the user is populated
          if (Settings.Instance.UseGoogleCalendar.User != "")
@@ -536,6 +539,9 @@ namespace OutlookGoogleSync
 
       void Save_Click(object sender, EventArgs e)
       {
+         Settings.Instance.OutlookAutoLogonProfileName = outlookAutoLogonTextBox.Text;
+         Settings.Instance.OutlookAutoLogonProfilePassword = outlookAutoLogonPwdTextBox.Text;
+
          XMLManager.export(Settings.Instance, FILENAME);
       }
 
@@ -662,6 +668,24 @@ namespace OutlookGoogleSync
             EventPropertyKey = key;
             GoogleCalendar.Instance.EventPropertyKey = key;
             OutlookCalendar.Instance.EventPropertyKey = key;
+         }
+      }
+
+      private void outlookAutoLogonCheckBox_CheckedChanged(object sender, EventArgs e)
+      {
+         if (outlookAutoLogonCheckBox.Checked)
+         {
+            outlookAutoLogonTextBox.ReadOnly = false;
+            outlookAutoLogonPwdTextBox.ReadOnly = false;
+            Settings.Instance.OutlookAutoLogonEnabled = true;
+            if (OutlookCalendar.IsLoggedIn()) OutlookCalendar.Instance.Release();
+         }
+         else
+         {
+            outlookAutoLogonTextBox.ReadOnly = true;
+            outlookAutoLogonPwdTextBox.ReadOnly = true;
+            Settings.Instance.OutlookAutoLogonEnabled = false;
+            if (OutlookCalendar.IsLoggedIn()) OutlookCalendar.Instance.Release();
          }
       }
    }

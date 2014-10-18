@@ -22,6 +22,11 @@ namespace OutlookGoogleSync
          }
       }
 
+      public static bool IsLoggedIn( )
+      {
+         return instance != null;
+      }
+
       private Application OutlookApplication;
       private NameSpace OutlookNamespace;
       private MAPIFolder OutlookFolder;
@@ -36,8 +41,16 @@ namespace OutlookGoogleSync
          // Outlook.NameSpace oNS = (Outlook.NameSpace)oApp.GetNamespace("mapi");
          OutlookNamespace = OutlookApplication.GetNamespace("mapi");
 
-         //Log on by using a dialog box to choose the profile.
-         OutlookNamespace.Logon("OutlookGoogleSyncTest", "", false, true);
+         if (!Settings.Instance.OutlookAutoLogonEnabled)
+         {
+            //Log on by using a dialog box to choose the profile.
+            OutlookNamespace.Logon("", "", true, true);
+         }
+         else
+         {
+            // Log on by using the profile name given...
+            OutlookNamespace.Logon(Settings.Instance.OutlookAutoLogonProfileName, Settings.Instance.OutlookAutoLogonProfilePassword, false, true);
+         }
 
          //Alternate logon method that uses a specific profile.
          // If you use this logon method, 

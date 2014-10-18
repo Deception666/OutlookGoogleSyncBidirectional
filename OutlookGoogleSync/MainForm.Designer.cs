@@ -74,6 +74,12 @@ namespace OutlookGoogleSync
          this.linkLabel1 = new System.Windows.Forms.LinkLabel();
          this.label4 = new System.Windows.Forms.Label();
          this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+         this.groupBox6 = new System.Windows.Forms.GroupBox();
+         this.outlookAutoLogonCheckBox = new System.Windows.Forms.CheckBox();
+         this.outlookAutoLogonTextBox = new System.Windows.Forms.TextBox();
+         this.outlookAutoLogonPwdTextBox = new System.Windows.Forms.TextBox();
+         this.label5 = new System.Windows.Forms.Label();
+         this.label6 = new System.Windows.Forms.Label();
          this.tabControl1.SuspendLayout();
          this.tabPage1.SuspendLayout();
          this.tabPage2.SuspendLayout();
@@ -84,6 +90,7 @@ namespace OutlookGoogleSync
          this.groupBox1.SuspendLayout();
          this.tabPage3.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+         this.groupBox6.SuspendLayout();
          this.SuspendLayout();
          // 
          // tabControl1
@@ -152,6 +159,7 @@ namespace OutlookGoogleSync
          // 
          // tabPage2
          // 
+         this.tabPage2.Controls.Add(this.groupBox6);
          this.tabPage2.Controls.Add(this.groupBox5);
          this.tabPage2.Controls.Add(this.groupBox4);
          this.tabPage2.Controls.Add(this.groupBox3);
@@ -171,16 +179,16 @@ namespace OutlookGoogleSync
          this.groupBox5.Controls.Add(this.cbAddReminders);
          this.groupBox5.Controls.Add(this.cbAddAttendees);
          this.groupBox5.Controls.Add(this.cbAddDescription);
-         this.groupBox5.Location = new System.Drawing.Point(6, 171);
+         this.groupBox5.Location = new System.Drawing.Point(7, 245);
          this.groupBox5.Name = "groupBox5";
-         this.groupBox5.Size = new System.Drawing.Size(475, 112);
+         this.groupBox5.Size = new System.Drawing.Size(475, 95);
          this.groupBox5.TabIndex = 12;
          this.groupBox5.TabStop = false;
          this.groupBox5.Text = "When creating Google Calendar Entries...   ";
          // 
          // cbAddReminders
          // 
-         this.cbAddReminders.Location = new System.Drawing.Point(12, 79);
+         this.cbAddReminders.Location = new System.Drawing.Point(12, 68);
          this.cbAddReminders.Name = "cbAddReminders";
          this.cbAddReminders.Size = new System.Drawing.Size(139, 24);
          this.cbAddReminders.TabIndex = 8;
@@ -190,7 +198,7 @@ namespace OutlookGoogleSync
          // 
          // cbAddAttendees
          // 
-         this.cbAddAttendees.Location = new System.Drawing.Point(12, 49);
+         this.cbAddAttendees.Location = new System.Drawing.Point(12, 41);
          this.cbAddAttendees.Name = "cbAddAttendees";
          this.cbAddAttendees.Size = new System.Drawing.Size(235, 24);
          this.cbAddAttendees.TabIndex = 6;
@@ -200,7 +208,7 @@ namespace OutlookGoogleSync
          // 
          // cbAddDescription
          // 
-         this.cbAddDescription.Location = new System.Drawing.Point(12, 19);
+         this.cbAddDescription.Location = new System.Drawing.Point(12, 14);
          this.cbAddDescription.Name = "cbAddDescription";
          this.cbAddDescription.Size = new System.Drawing.Size(209, 24);
          this.cbAddDescription.TabIndex = 7;
@@ -213,16 +221,16 @@ namespace OutlookGoogleSync
          this.groupBox4.Controls.Add(this.cbMinimizeToTray);
          this.groupBox4.Controls.Add(this.cbStartInTray);
          this.groupBox4.Controls.Add(this.cbCreateFiles);
-         this.groupBox4.Location = new System.Drawing.Point(6, 289);
+         this.groupBox4.Location = new System.Drawing.Point(6, 344);
          this.groupBox4.Name = "groupBox4";
-         this.groupBox4.Size = new System.Drawing.Size(475, 115);
+         this.groupBox4.Size = new System.Drawing.Size(475, 94);
          this.groupBox4.TabIndex = 11;
          this.groupBox4.TabStop = false;
          this.groupBox4.Text = "Options";
          // 
          // cbMinimizeToTray
          // 
-         this.cbMinimizeToTray.Location = new System.Drawing.Point(12, 49);
+         this.cbMinimizeToTray.Location = new System.Drawing.Point(12, 41);
          this.cbMinimizeToTray.Name = "cbMinimizeToTray";
          this.cbMinimizeToTray.Size = new System.Drawing.Size(104, 24);
          this.cbMinimizeToTray.TabIndex = 0;
@@ -232,7 +240,7 @@ namespace OutlookGoogleSync
          // 
          // cbStartInTray
          // 
-         this.cbStartInTray.Location = new System.Drawing.Point(12, 19);
+         this.cbStartInTray.Location = new System.Drawing.Point(12, 14);
          this.cbStartInTray.Name = "cbStartInTray";
          this.cbStartInTray.Size = new System.Drawing.Size(104, 24);
          this.cbStartInTray.TabIndex = 1;
@@ -242,7 +250,7 @@ namespace OutlookGoogleSync
          // 
          // cbCreateFiles
          // 
-         this.cbCreateFiles.Location = new System.Drawing.Point(12, 79);
+         this.cbCreateFiles.Location = new System.Drawing.Point(12, 68);
          this.cbCreateFiles.Name = "cbCreateFiles";
          this.cbCreateFiles.Size = new System.Drawing.Size(235, 24);
          this.cbCreateFiles.TabIndex = 7;
@@ -255,7 +263,7 @@ namespace OutlookGoogleSync
          this.groupBox3.Controls.Add(this.cbShowBubbleTooltips);
          this.groupBox3.Controls.Add(this.cbSyncEveryHour);
          this.groupBox3.Controls.Add(this.tbMinuteOffsets);
-         this.groupBox3.Location = new System.Drawing.Point(177, 80);
+         this.groupBox3.Location = new System.Drawing.Point(177, 153);
          this.groupBox3.Name = "groupBox3";
          this.groupBox3.Size = new System.Drawing.Size(304, 85);
          this.groupBox3.TabIndex = 10;
@@ -347,7 +355,7 @@ namespace OutlookGoogleSync
          this.groupBox1.Controls.Add(this.tbDaysInThePast);
          this.groupBox1.Controls.Add(this.label2);
          this.groupBox1.Controls.Add(this.label1);
-         this.groupBox1.Location = new System.Drawing.Point(6, 80);
+         this.groupBox1.Location = new System.Drawing.Point(6, 153);
          this.groupBox1.Name = "groupBox1";
          this.groupBox1.Size = new System.Drawing.Size(165, 85);
          this.groupBox1.TabIndex = 0;
@@ -437,6 +445,67 @@ namespace OutlookGoogleSync
          this.notifyIcon1.Text = "OutlookGoogleSync";
          this.notifyIcon1.Click += new System.EventHandler(this.NotifyIcon1Click);
          // 
+         // groupBox6
+         // 
+         this.groupBox6.Controls.Add(this.label6);
+         this.groupBox6.Controls.Add(this.label5);
+         this.groupBox6.Controls.Add(this.outlookAutoLogonPwdTextBox);
+         this.groupBox6.Controls.Add(this.outlookAutoLogonTextBox);
+         this.groupBox6.Controls.Add(this.outlookAutoLogonCheckBox);
+         this.groupBox6.Location = new System.Drawing.Point(6, 80);
+         this.groupBox6.Name = "groupBox6";
+         this.groupBox6.Size = new System.Drawing.Size(475, 67);
+         this.groupBox6.TabIndex = 13;
+         this.groupBox6.TabStop = false;
+         this.groupBox6.Text = "Outlook Calendar";
+         // 
+         // outlookAutoLogonCheckBox
+         // 
+         this.outlookAutoLogonCheckBox.AutoSize = true;
+         this.outlookAutoLogonCheckBox.Location = new System.Drawing.Point(12, 17);
+         this.outlookAutoLogonCheckBox.Name = "outlookAutoLogonCheckBox";
+         this.outlookAutoLogonCheckBox.Size = new System.Drawing.Size(81, 17);
+         this.outlookAutoLogonCheckBox.TabIndex = 0;
+         this.outlookAutoLogonCheckBox.Text = "Auto Logon";
+         this.outlookAutoLogonCheckBox.UseVisualStyleBackColor = true;
+         this.outlookAutoLogonCheckBox.CheckedChanged += new System.EventHandler(this.outlookAutoLogonCheckBox_CheckedChanged);
+         // 
+         // outlookAutoLogonTextBox
+         // 
+         this.outlookAutoLogonTextBox.Location = new System.Drawing.Point(177, 12);
+         this.outlookAutoLogonTextBox.Name = "outlookAutoLogonTextBox";
+         this.outlookAutoLogonTextBox.ReadOnly = true;
+         this.outlookAutoLogonTextBox.Size = new System.Drawing.Size(291, 20);
+         this.outlookAutoLogonTextBox.TabIndex = 1;
+         // 
+         // outlookAutoLogonPwdTextBox
+         // 
+         this.outlookAutoLogonPwdTextBox.Location = new System.Drawing.Point(177, 39);
+         this.outlookAutoLogonPwdTextBox.Name = "outlookAutoLogonPwdTextBox";
+         this.outlookAutoLogonPwdTextBox.PasswordChar = '*';
+         this.outlookAutoLogonPwdTextBox.ReadOnly = true;
+         this.outlookAutoLogonPwdTextBox.Size = new System.Drawing.Size(291, 20);
+         this.outlookAutoLogonPwdTextBox.TabIndex = 2;
+         this.outlookAutoLogonPwdTextBox.UseSystemPasswordChar = true;
+         // 
+         // label5
+         // 
+         this.label5.AutoSize = true;
+         this.label5.Location = new System.Drawing.Point(126, 18);
+         this.label5.Name = "label5";
+         this.label5.Size = new System.Drawing.Size(39, 13);
+         this.label5.TabIndex = 3;
+         this.label5.Text = "Profile:";
+         // 
+         // label6
+         // 
+         this.label6.AutoSize = true;
+         this.label6.Location = new System.Drawing.Point(109, 45);
+         this.label6.Name = "label6";
+         this.label6.Size = new System.Drawing.Size(56, 13);
+         this.label6.TabIndex = 4;
+         this.label6.Text = "Password:";
+         // 
          // MainForm
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -462,6 +531,8 @@ namespace OutlookGoogleSync
          this.tabPage3.ResumeLayout(false);
          this.tabPage3.PerformLayout();
          ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+         this.groupBox6.ResumeLayout(false);
+         this.groupBox6.PerformLayout();
          this.ResumeLayout(false);
 
       }
@@ -499,6 +570,12 @@ namespace OutlookGoogleSync
       private System.Windows.Forms.Label lLastSync;
       private System.Windows.Forms.Label lNextSync;
       private System.Windows.Forms.PictureBox pictureBox1;
+      private System.Windows.Forms.GroupBox groupBox6;
+      private System.Windows.Forms.TextBox outlookAutoLogonTextBox;
+      private System.Windows.Forms.CheckBox outlookAutoLogonCheckBox;
+      private System.Windows.Forms.Label label6;
+      private System.Windows.Forms.Label label5;
+      private System.Windows.Forms.TextBox outlookAutoLogonPwdTextBox;
 
 
 
