@@ -251,6 +251,12 @@ namespace OutlookGoogleSync
 
       void synchronize( List< AppointmentItem > outlook_items, List< Event > google_items )
       {
+         // TODO: outlook to google recurrence 90% complete
+         //       getting weird error message from outlook: "The operation cannot be performed because the message has changed"
+         // TODO: google to outlook recurrence 0% complete... need to read up on http://www.ietf.org/rfc/rfc2445
+         // TODO: still need a first time check to see if the item does not exist in other callendar (compare sigs and update if same)
+         // TODO: testing on a larger scale...
+
          // indicates the number of entries added / updated / removed....
          uint google_entries_added = 0;
          uint google_entries_updated = 0;
@@ -373,7 +379,7 @@ namespace OutlookGoogleSync
                AppointmentItem oitem = null;
                foreach (var o in outlook_items)
                {
-                  if (outlook_id == o.GlobalAppointmentID)
+                  if (outlook_id == OutlookCalendar.FormatEventID(o))
                   {
                      oitem = o; break;
                   }
@@ -411,8 +417,17 @@ namespace OutlookGoogleSync
                      // update the status
                      ++outlook_entries_updated;
                   }
+
+                  // save and close the outlook item
+                  ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
                }
             }
+         }
+
+         // close all the outlook items
+         foreach (var o in outlook_items)
+         {
+            ((_AppointmentItem)o).Close(OlInspectorClose.olSave);
          }
 
          // clear out both lists... these items have been processed...

@@ -37,7 +37,7 @@ namespace OutlookGoogleSync
          OutlookNamespace = OutlookApplication.GetNamespace("mapi");
 
          //Log on by using a dialog box to choose the profile.
-         OutlookNamespace.Logon("", "", true, true);
+         OutlookNamespace.Logon("OutlookGoogleSyncTest", "", false, true);
 
          //Alternate logon method that uses a specific profile.
          // If you use this logon method, 
@@ -228,7 +228,7 @@ namespace OutlookGoogleSync
             e.ExtendedProperties.Private = new Dictionary< string, string >();
          }
 
-         e.ExtendedProperties.Private[EventPropertyKey] = ai.GlobalAppointmentID;
+         e.ExtendedProperties.Private[EventPropertyKey] = OutlookCalendar.FormatEventID(ai);
       }
 
       // one attendee per line
@@ -252,6 +252,19 @@ namespace OutlookGoogleSync
 
       // defines the property name for associating outlook events to google events
       public string EventPropertyKey { get; set; }
+
+      // formats the event proplery id value
+      public static string FormatEventID( AppointmentItem ai )
+      {
+         string id = ai.GlobalAppointmentID;
+
+         if (ai.IsRecurring)
+         {
+            id += " - RECURRENCE - " + ai.Start.ToString();
+         }
+
+         return id;
+      }
 
    }
 }

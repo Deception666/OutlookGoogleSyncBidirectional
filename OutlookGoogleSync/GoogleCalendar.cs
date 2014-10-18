@@ -292,7 +292,7 @@ namespace OutlookGoogleSync
             e.ExtendedProperties.Private = new Dictionary< string, string >();
          }
 
-         e.ExtendedProperties.Private[EventPropertyKey] = ai.GlobalAppointmentID;
+         e.ExtendedProperties.Private[EventPropertyKey] = OutlookCalendar.FormatEventID(ai);
 
          // make sure to tag the user property of the google id
          UserProperty oitem_google_prop = ai.UserProperties.Find(EventPropertyKey);
