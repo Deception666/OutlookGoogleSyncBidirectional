@@ -516,7 +516,7 @@ namespace OutlookGoogleSync
 
       void logboxout(string s)
       {
-         LogBox.Text += s + Environment.NewLine;
+         LogBox.AppendText(s + Environment.NewLine);
       }
 
       void Save_Click(object sender, EventArgs e)

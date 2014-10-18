@@ -129,10 +129,14 @@ namespace OutlookGoogleSync
          // 
          // LogBox
          // 
+         this.LogBox.AcceptsTab = true;
          this.LogBox.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
          this.LogBox.Location = new System.Drawing.Point(3, 57);
+         this.LogBox.MaxLength = 500000;
          this.LogBox.Multiline = true;
          this.LogBox.Name = "LogBox";
+         this.LogBox.ReadOnly = true;
+         this.LogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
          this.LogBox.Size = new System.Drawing.Size(481, 379);
          this.LogBox.TabIndex = 1;
          // 
