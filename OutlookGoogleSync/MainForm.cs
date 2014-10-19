@@ -210,6 +210,47 @@ namespace OutlookGoogleSync
          bGetMyCalendars.Enabled = true;
       }
 
+      bool ObtainOutlookEntries( out List< AppointmentItem > outlook_items )
+      {
+         bool obtained = true;
+         outlook_items = new List< AppointmentItem >();
+
+         try
+         {
+            outlook_items = OutlookCalendar.Instance.getCalendarEntriesInRange();
+         }
+         catch (System.Exception ex)
+         {
+            logboxout("Unable to access to the Outlook Calendar. The folowing error occurs:");
+            logboxout(ex.Message + Environment.NewLine + "=> Retry later.");
+
+            OutlookCalendar.Instance.Reset();
+            obtained = false;
+         }
+
+         return obtained;
+      }
+
+      bool ObtainGoogleEntries( out List< Event > google_items )
+      {
+         bool obtained = true;
+         google_items = new List< Event >();
+
+         try
+         {
+            google_items = GoogleCalendar.Instance.getCalendarEntriesInRange();
+         }
+         catch (System.Exception ex)
+         {
+            logboxout("Unable to connect to the Google Calendar. The folowing error occurs:");
+            logboxout(ex.Message + Environment.NewLine + " => Check your network connection.");
+
+            obtained = false;
+         }
+
+         return obtained;
+      }
+
       void SyncNow_Click(object sender, EventArgs e)
       {
          // update the property key value before doing the sync
@@ -458,17 +499,8 @@ namespace OutlookGoogleSync
 
          logboxout("Reading Outlook Calendar Entries...");
          List<AppointmentItem> OutlookEntries = null;
-         try
-         {
-            OutlookEntries = OutlookCalendar.Instance.getCalendarEntriesInRange();
-         }
-         catch (System.Exception ex)
-         {
-            logboxout("Unable to access to the Outlook Calendar. The folowing error occurs:");
-            logboxout(ex.Message + "\r\n => Retry later.");
-            OutlookCalendar.Instance.Reset();
-            return false;
-         }
+         if (!ObtainOutlookEntries(out OutlookEntries)) return false;
+         
          if (cbCreateFiles.Checked)
          {
             TextWriter tw = new StreamWriter("export_found_in_outlook.txt");
@@ -481,20 +513,9 @@ namespace OutlookGoogleSync
          logboxout("Found " + OutlookEntries.Count + " Outlook Calendar Entries.");
          logboxout("--------------------------------------------------");
 
-
-
          logboxout("Reading Google Calendar Entries...");
          List<Event> GoogleEntries = null;
-         try
-         {
-            GoogleEntries = GoogleCalendar.Instance.getCalendarEntriesInRange();
-         }
-         catch (System.Exception ex)
-         {
-            logboxout("Unable to connect to the Google Calendar. The folowing error occurs:");
-            logboxout(ex.Message + "\r\n => Check your network connection.");
-            return false;
-         }
+         if (!ObtainGoogleEntries(out GoogleEntries)) return false;
 
          if (cbCreateFiles.Checked)
          {
@@ -661,7 +682,7 @@ namespace OutlookGoogleSync
             string key = Settings.Instance.UseGoogleCalendar.Id;
             key = key.Replace("[", "").Replace("]", "").Replace("_", "").Replace("#", "");
 
-            // the string cannot exceed 45 characters in length (google restriction)
+            // the string cannot exceed 44 characters in length (google restriction)
             key = key.Substring(0, key.Length > 44 ? 44 : key.Length);
 
             // set the event properties for all parties
@@ -687,6 +708,85 @@ namespace OutlookGoogleSync
             Settings.Instance.OutlookAutoLogonEnabled = false;
             if (OutlookCalendar.IsLoggedIn()) OutlookCalendar.Instance.Release();
          }
+
+      }
+
+      private void clearUserPropertiesBtn_Click(object sender, EventArgs ea)
+      {
+         // do not allow user to press buttons
+         bSyncNow.Enabled = false;
+         clearUserPropertiesBtn.Enabled = false;
+
+         // this is a developer action... it may be required to start fresh, so clear out the bindings...
+         var result = MessageBox.Show(this,
+                                      "Do you want to clear the bindings between Outlook and Google events?",
+                                      "Clear Bindings (Developer Action)",
+                                      MessageBoxButtons.YesNo);
+
+         if (result == DialogResult.Yes)
+         {
+            // indicate start
+            LogBox.Text = "";
+            logboxout("Clear properties started at " + DateTime.Now);
+
+            // update the property key value before doing the sync
+            UpdateEventPropertyKey();
+
+            // obtain the outlook items
+            List< AppointmentItem > outlook_items = null;
+            if (!ObtainOutlookEntries(out outlook_items)) return;
+
+            // remove the user property for the currently logged in outlook user...
+            foreach (var o in outlook_items)
+            {
+               if (o != null && o.UserProperties != null)
+               {
+                  UserProperty oitem_property = o.UserProperties.Find(OutlookCalendar.Instance.EventPropertyKey);
+
+                  if (oitem_property != null)
+                  {
+                     logboxout("Clearing Outlook property: " + o.Subject);
+
+                     oitem_property.Delete();
+                  }
+
+                  ((_AppointmentItem)o).Close(OlInspectorClose.olSave);
+               }
+            }
+
+            // obtain the google items
+            List< Event > google_items = null;
+            if (!ObtainGoogleEntries(out google_items)) return;
+
+            // remove the user property for the currently logged in google user...
+            foreach (var e in google_items)
+            {
+               if (e != null &&
+                   e.ExtendedProperties != null &&
+                   e.ExtendedProperties.Private != null &&
+                   e.ExtendedProperties.Private.ContainsKey(GoogleCalendar.Instance.EventPropertyKey))
+               {
+                  logboxout("Clearing Google property: " + e.Summary);
+
+                  e.ExtendedProperties.Private.Remove(GoogleCalendar.Instance.EventPropertyKey);
+
+                  GoogleCalendar.Instance.updateEntry(e);
+               }
+            }
+
+            if (!cbSyncEveryHour.Checked)
+            {
+               // close the outlook calendar instance so not to always be logged in
+               OutlookCalendar.Instance.Release();
+            }
+
+            // indicate finish
+            logboxout("Clear properties ended at " + DateTime.Now);
+         }
+
+         // restore button presses...
+         bSyncNow.Enabled = true;
+         clearUserPropertiesBtn.Enabled = true;
       }
    }
 }
