@@ -285,6 +285,8 @@ namespace OutlookGoogleSync
 
       private void UpdatePropertyIDs( Event e, AppointmentItem ai )
       {
+         // TODO: move to a utility function, as it matches that of outlook
+
          // make sure to tag the private property of the outlook id
          if (e.ExtendedProperties == null)
          {
@@ -308,6 +310,11 @@ namespace OutlookGoogleSync
 
          // save the outlook event
          ai.Save();
+      }
+
+      public void Bind( Event e, AppointmentItem ai )
+      {
+         UpdatePropertyIDs(e, ai);
       }
 
       // returns the Google Time Format String of a given .Net DateTime value

@@ -308,6 +308,7 @@ namespace OutlookGoogleSync
          uint outlook_entries_added = 0;
          uint outlook_entries_updated = 0;
          uint outlook_entries_removed = 0;
+         uint bound_entries_found = 0;
 
          // first synchronize outlook -> google
 
@@ -322,16 +323,61 @@ namespace OutlookGoogleSync
 
             if (oitem_google_prop == null)
             {
-               // give some indication of what will take place
-               logboxout("Creating Google event: " + oitem.Subject);
+               // run across the google events to see if there is one that matches
+               Event gitem = null;
+               foreach (var g in google_items)
+               {
+                  // lowercase match the signature...
+                  // the user has to type it the same in both cases to make a match...
+                  // is there something btter here?
+                  if (signature(g).ToLower() == signature(oitem).ToLower())
+                  {
+                     // if the property is not set or the property matches the oitem, match found...
+                     if (g.ExtendedProperties == null ||
+                         g.ExtendedProperties.Private == null ||
+                         g.ExtendedProperties.Private.ContainsKey(EventPropertyKey) == false ||
+                         g.ExtendedProperties.Private[EventPropertyKey] == OutlookCalendar.FormatEventID(oitem))
+                     {
+                        gitem = g; break;
+                     }
+                  }
+               }
 
-               // the property does not exist... this mean that google calendar
-               // does not have this outlook entry...  after this call, the outlook item
-               // and the google item should be tied together by the use of properties...
-               var gitem = GoogleCalendar.Instance.addEntry(oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+               if (gitem != null)
+               {
+                  // give some indication of what will take place
+                  logboxout("Binding Outlook and Google event: " + oitem.Subject + " (" + oitem.Start + ")");
 
-               // updated the stats
-               ++google_entries_added;
+                  // bind the properties together
+                  OutlookCalendar.Instance.Bind(oitem, gitem);
+
+                  // update the instance on the google calendar
+                  GoogleCalendar.Instance.updateEntry(gitem);
+
+                  // remove the outlook item and the google item from the lists...
+                  // do not need to process them again for future iterations...
+                  google_items.Remove(gitem);
+                  outlook_items.Remove(oitem);
+
+                  // save and close the outlook item
+                  ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
+
+                  // update the stats
+                  ++bound_entries_found;  
+               }
+               else
+               {
+                  // give some indication of what will take place
+                  logboxout("Creating Google event: " + oitem.Subject);
+
+                  // the property does not exist... this mean that google calendar
+                  // does not have this outlook entry...  after this call, the outlook item
+                  // and the google item should be tied together by the use of properties...
+                  gitem = GoogleCalendar.Instance.addEntry(oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+
+                  // updated the stats
+                  ++google_entries_added;
+               }
             }
             else
             {
@@ -487,6 +533,8 @@ namespace OutlookGoogleSync
          logboxout("Outlook entries added: " + outlook_entries_added);
          logboxout("Outlook entries updated: " + outlook_entries_updated);
          logboxout("Outlook entries removed: " + outlook_entries_removed);
+         logboxout("");
+         logboxout("Bound entries found: " + bound_entries_found);
       }
 
       Boolean synchronize()
@@ -734,7 +782,12 @@ namespace OutlookGoogleSync
 
             // obtain the outlook items
             List< AppointmentItem > outlook_items = null;
-            if (!ObtainOutlookEntries(out outlook_items)) return;
+            if (!ObtainOutlookEntries(out outlook_items))
+            {
+               logboxout("Unable to obtain outlook entries!  Try closing outlook and trying again!");
+
+               return;
+            }
 
             // remove the user property for the currently logged in outlook user...
             foreach (var o in outlook_items)
@@ -756,7 +809,12 @@ namespace OutlookGoogleSync
 
             // obtain the google items
             List< Event > google_items = null;
-            if (!ObtainGoogleEntries(out google_items)) return;
+            if (!ObtainGoogleEntries(out google_items))
+            {
+               logboxout("Unable to obtain google entries!  Try checking network connectivity!");
+
+               return;
+            }
 
             // remove the user property for the currently logged in google user...
             foreach (var e in google_items)
