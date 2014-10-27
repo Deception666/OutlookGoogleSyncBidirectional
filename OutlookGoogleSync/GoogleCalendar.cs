@@ -302,6 +302,8 @@ namespace OutlookGoogleSync
          if (oitem_google_prop != null)
          {
             oitem_google_prop.Value = e.Id;
+
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem_google_prop);
          }
          else
          {

@@ -20,7 +20,7 @@ namespace OutlookGoogleSync
       public static MainForm Instance;
 
       public const string FILENAME = "settings.xml";
-      public const string VERSION = "1.1.0";
+      public const string VERSION = "0.0.2";
 
       public Timer ogstimer;
       public DateTime oldtime;
@@ -224,7 +224,7 @@ namespace OutlookGoogleSync
             logboxout("Unable to access to the Outlook Calendar. The folowing error occurs:");
             logboxout(ex.Message + Environment.NewLine + "=> Retry later.");
 
-            OutlookCalendar.Instance.Reset();
+            OutlookCalendar.Instance.Release();
             obtained = false;
          }
 
@@ -284,11 +284,8 @@ namespace OutlookGoogleSync
             setNextSync(5);
          }
 
-         if (!cbSyncEveryHour.Checked)
-         {
-            // close the outlook calendar instance so not to always be logged in
-            OutlookCalendar.Instance.Release();
-         }
+         // close the outlook calendar instance so not to always be logged in
+         OutlookCalendar.Instance.Release();
 
          bSyncNow.Enabled = true;
       }
@@ -297,8 +294,8 @@ namespace OutlookGoogleSync
       {
          // TODO: outlook to google recurrence 90% complete
          //       getting weird error message from outlook: "The operation cannot be performed because the message has changed"
+         //       need to determine what happens when deleting just the master recurrence object
          // TODO: google to outlook recurrence 0% complete... need to read up on http://www.ietf.org/rfc/rfc2445
-         // TODO: still need a first time check to see if the item does not exist in other callendar (compare sigs and update if same)
          // TODO: testing on a larger scale...
          // TODO: refactor this function, as it is getting out of control...
 
@@ -361,6 +358,9 @@ namespace OutlookGoogleSync
                   // save and close the outlook item
                   ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
 
+                  // remove the com reference
+                  System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem);
+
                   // update the stats
                   ++bound_entries_found;  
                }
@@ -403,6 +403,9 @@ namespace OutlookGoogleSync
                   // outlook item can no longer be used after it is deleted
                   outlook_items.RemoveAt(i);
 
+                  // need to release the com reference
+                  System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem);
+
                   // update the stats
                   ++outlook_entries_removed;
                }
@@ -425,6 +428,9 @@ namespace OutlookGoogleSync
                      ++google_entries_updated;
                   }
                }
+
+               // need to release the com reference
+               System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem_google_prop);
             }
          }
 
@@ -485,6 +491,9 @@ namespace OutlookGoogleSync
                   // save and close the outlook item
                   ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
 
+                  // need to release the com reference
+                  System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem);
+
                   // update the stats
                   ++bound_entries_found;  
                }
@@ -498,8 +507,11 @@ namespace OutlookGoogleSync
                   // and the google item should be tied together by the use of properties...
                   oitem = OutlookCalendar.Instance.addEntry(gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
 
-                  // the google currently does not have an updated id... this needs to be reflected on the server...
+                  // google currently does not have an updated id... this needs to be reflected on the server...
                   GoogleCalendar.Instance.updateEntry(gitem);
+
+                  // need to release the com reference
+                  System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem);
 
                   // update the stats
                   ++outlook_entries_added;
@@ -553,6 +565,9 @@ namespace OutlookGoogleSync
 
                   // save and close the outlook item
                   ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
+
+                  // need to release the com reference
+                  System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem);
                }
             }
          }
@@ -561,6 +576,8 @@ namespace OutlookGoogleSync
          foreach (var o in outlook_items)
          {
             ((_AppointmentItem)o).Close(OlInspectorClose.olSave);
+
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(o);
          }
 
          // clear out both lists... these items have been processed...
@@ -819,18 +836,14 @@ namespace OutlookGoogleSync
             // indicate start
             LogBox.Text = "";
             logboxout("Clear properties started at " + DateTime.Now);
+            logboxout("");
 
             // update the property key value before doing the sync
             UpdateEventPropertyKey();
 
             // obtain the outlook items
             List< AppointmentItem > outlook_items = null;
-            if (!ObtainOutlookEntries(out outlook_items))
-            {
-               logboxout("Unable to obtain outlook entries!  Try closing outlook and trying again!");
-
-               return;
-            }
+            if (!ObtainOutlookEntries(out outlook_items)) return;
 
             // remove the user property for the currently logged in outlook user...
             foreach (var o in outlook_items)
@@ -844,20 +857,19 @@ namespace OutlookGoogleSync
                      logboxout("Clearing Outlook property: " + o.Subject);
 
                      oitem_property.Delete();
+
+                     System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem_property);
                   }
 
                   ((_AppointmentItem)o).Close(OlInspectorClose.olSave);
+
+                  System.Runtime.InteropServices.Marshal.ReleaseComObject(o);
                }
             }
 
             // obtain the google items
             List< Event > google_items = null;
-            if (!ObtainGoogleEntries(out google_items))
-            {
-               logboxout("Unable to obtain google entries!  Try checking network connectivity!");
-
-               return;
-            }
+            if (!ObtainGoogleEntries(out google_items)) return;
 
             // remove the user property for the currently logged in google user...
             foreach (var e in google_items)
@@ -875,13 +887,11 @@ namespace OutlookGoogleSync
                }
             }
 
-            if (!cbSyncEveryHour.Checked)
-            {
-               // close the outlook calendar instance so not to always be logged in
-               OutlookCalendar.Instance.Release();
-            }
+            // close the outlook calendar instance so not to always be logged in
+            OutlookCalendar.Instance.Release();
 
             // indicate finish
+            logboxout("");
             logboxout("Clear properties ended at " + DateTime.Now);
          }
 

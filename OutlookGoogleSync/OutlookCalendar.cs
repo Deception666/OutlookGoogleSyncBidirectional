@@ -68,24 +68,12 @@ namespace OutlookGoogleSync
          OutlookNamespace.Logoff();
       }
 
-
-      public void Reset()
-      {
-         Release();
-
-         instance = new OutlookCalendar();
-      }
-
       public void Release( )
       {
          // quit the application
          ((_Application)OutlookApplication).Quit();
-         // release the instance
-         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookFolder);
-         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookNamespace);
-         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookApplication.Session);
-         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(OutlookApplication);
 
+         // release the instance
          OutlookApplication = null;
          OutlookNamespace = null;
          OutlookFolder = null;
@@ -95,7 +83,10 @@ namespace OutlookGoogleSync
          GC.Collect();
          GC.WaitForPendingFinalizers();
          GC.Collect();
-         GC.WaitForPendingFinalizers(); 
+         GC.WaitForPendingFinalizers();
+
+         // another good reference:
+         // http://blogs.msdn.com/b/mstehle/archive/2007/12/07/oom-net-part-2-outlook-item-leaks.aspx
       }
 
       public List<AppointmentItem> getCalendarEntries()
@@ -236,6 +227,8 @@ namespace OutlookGoogleSync
          if (oitem_google_prop != null)
          {
             oitem_google_prop.Value = e.Id;
+
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem_google_prop);
          }
          else
          {
