@@ -300,6 +300,7 @@ namespace OutlookGoogleSync
          // TODO: google to outlook recurrence 0% complete... need to read up on http://www.ietf.org/rfc/rfc2445
          // TODO: still need a first time check to see if the item does not exist in other callendar (compare sigs and update if same)
          // TODO: testing on a larger scale...
+         // TODO: refactor this function, as it is getting out of control...
 
          // indicates the number of entries added / updated / removed....
          uint google_entries_added = 0;
@@ -327,19 +328,17 @@ namespace OutlookGoogleSync
                Event gitem = null;
                foreach (var g in google_items)
                {
-                  // lowercase match the signature...
+                  // lowercase match the signature and
+                  // the property is not set or the property matches the oitem, match found...
                   // the user has to type it the same in both cases to make a match...
-                  // is there something btter here?
-                  if (signature(g).ToLower() == signature(oitem).ToLower())
+                  // is there something better here?
+                  if (signature(g).ToLower() == signature(oitem).ToLower() &&
+                     (g.ExtendedProperties == null ||
+                      g.ExtendedProperties.Private == null ||
+                      g.ExtendedProperties.Private.ContainsKey(EventPropertyKey) == false ||
+                      g.ExtendedProperties.Private[EventPropertyKey] == OutlookCalendar.FormatEventID(oitem)))
                   {
-                     // if the property is not set or the property matches the oitem, match found...
-                     if (g.ExtendedProperties == null ||
-                         g.ExtendedProperties.Private == null ||
-                         g.ExtendedProperties.Private.ContainsKey(EventPropertyKey) == false ||
-                         g.ExtendedProperties.Private[EventPropertyKey] == OutlookCalendar.FormatEventID(oitem))
-                     {
-                        gitem = g; break;
-                     }
+                     gitem = g; break;
                   }
                }
 
@@ -448,19 +447,63 @@ namespace OutlookGoogleSync
 
             if (outlook_id == null)
             {
-               // give some indication of what will take place
-               logboxout("Creating Outlook event: " + gitem.Summary);
+               // run across the outlook events to see if there is one that matches...
+               // this may not need to be done, as the google pass should have found them all...
+               // lets be on the safe side here and do it anyway...
+               AppointmentItem oitem = null;
+               foreach (var o in outlook_items)
+               {
+                  // lowercase match the signature and
+                  // the property is not set or the property matches the gitem, match found...
+                  // the user has to type it the same in both cases to make a match...
+                  // is there something better here?
+                  if (signature(o).ToLower() == signature(gitem).ToLower() &&
+                     (oitem.UserProperties == null ||
+                      oitem.UserProperties.Find(EventPropertyKey) == null ||
+                      oitem.UserProperties.Find(EventPropertyKey).Value == gitem.Id))
+                  {
+                     oitem = o; break;
+                  }
+               }
 
-               // the property does not exist... this means that the outlook calendar
-               // does not have this google entry...  after this call, the outlook item
-               // and the google item should be tied together by the use of properties...
-               var oitem = OutlookCalendar.Instance.addEntry(gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+               if (oitem != null)
+               {
+                  // give some indication of what will take place
+                  logboxout("Binding Outlook and Google event: " + gitem.Summary + " (" + gitem.Start + ")");
 
-               // the google currently does not have an updated id... this needs to be reflected on the server...
-               GoogleCalendar.Instance.updateEntry(gitem);
+                  // bind the properties together
+                  OutlookCalendar.Instance.Bind(oitem, gitem);
 
-               // update the stats
-               ++outlook_entries_added;
+                  // update the instance on the google calendar
+                  GoogleCalendar.Instance.updateEntry(gitem);
+
+                  // remove the outlook item and the google item from the lists...
+                  // do not need to process them again for future iterations...
+                  google_items.Remove(gitem);
+                  outlook_items.Remove(oitem);
+
+                  // save and close the outlook item
+                  ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
+
+                  // update the stats
+                  ++bound_entries_found;  
+               }
+               else
+               {
+                  // give some indication of what will take place
+                  logboxout("Creating Outlook event: " + gitem.Summary);
+
+                  // the property does not exist... this means that the outlook calendar
+                  // does not have this google entry...  after this call, the outlook item
+                  // and the google item should be tied together by the use of properties...
+                  oitem = OutlookCalendar.Instance.addEntry(gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+
+                  // the google currently does not have an updated id... this needs to be reflected on the server...
+                  GoogleCalendar.Instance.updateEntry(gitem);
+
+                  // update the stats
+                  ++outlook_entries_added;
+               }
             }
             else
             {

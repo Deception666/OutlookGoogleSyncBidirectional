@@ -228,7 +228,7 @@ namespace OutlookGoogleSync
 
       public void Bind( AppointmentItem ai, Event e )
       {
-         // TODO: move to a utility function, as it matches that of gootle
+         // TODO: move to a utility function, as it matches that of google
 
          // make sure to tag the user property of the google id
          UserProperty oitem_google_prop = ai.UserProperties.Find(EventPropertyKey);
