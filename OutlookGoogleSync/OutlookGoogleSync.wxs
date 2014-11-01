@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+   <Product Id="*" Name="OutlookGoogleSync !(bind.FileVersion.OutlookGoogleSync.exe)" Language="1033" Version="!(bind.FileVersion.OutlookGoogleSync.exe)" Manufacturer="https://outlookgooglesyncbidirectional.codeplex.com/" UpgradeCode="11cbd3e6-f587-4c5b-b7e7-8c1d58c6d21f">
+      <Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated" Manufacturer="https://outlookgooglesyncbidirectional.codeplex.com/" />
+
+      <MajorUpgrade DowngradeErrorMessage="A newer version of OutlookGoogleSync is already installed." />
+      <MediaTemplate />
+
+      <Feature Id="ApplicationInstall" Title="OutlookGoolgeSync" Description="https://outlookgooglesyncbidirectional.codeplex.com/" Level="1">
+         <ComponentGroupRef Id="ApplicationInstallComponents" />
+      </Feature>
+   </Product>
+
+   <Fragment>
+      <Directory Id="TARGETDIR" Name="SourceDir">
+         <Directory Id="ProgramFiles64Folder">
+            <Directory Id="INSTALLFOLDER" Name="OutlookGoogleSync" />
+         </Directory>
+         <Directory Id="ProgramMenuFolder">
+            <Directory Id="ApplicationProgramsFolder" Name="OutlookGoogleSync" />
+         </Directory>
+      </Directory>
+   </Fragment>
+
+   <Fragment>
+      <DirectoryRef Id="ApplicationProgramsFolder">
+         <Component Id="ApplicationShortcut" Guid="{CC0BA4A3-A509-4CEE-8F5D-95588555C72E}">
+            <Shortcut Id="ApplicationStartMenuShortcut"
+                      Name="OutlookGoogleSync"
+                      Description="OutlookGoogleSync !(bind.FileVersion.OutlookGoogleSync.exe)"
+                      Target="[#OutlookGoogleSync.exe]"
+                      WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+            <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+            <RegistryValue Root="HKCU" Key="Software\Microsoft\OutlookGoogleSync" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+         </Component>
+      </DirectoryRef>
+      
+      <ComponentGroup Id="ApplicationInstallComponents" Directory="INSTALLFOLDER">
+         <Component Id="DotNetOpenAuth.dll" Guid="{7E0F0A4D-23E8-4ADC-BA16-A72BB9B1F38C}">
+            <File Id="DotNetOpenAuth.dll" Source=".\bin\x64\Release\DotNetOpenAuth.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Auth.PlatformServices.dll" Guid="{AAC480D0-F15E-4C2E-B426-44CF5F07CD0F}">
+            <File Id="Google.Apis.Auth.PlatformServices.dll" Source=".\bin\x64\Release\Google.Apis.Auth.PlatformServices.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Auth.PlatformServices.pdb" Guid="{63857714-8E94-4EDB-8EF9-7A3568FE1038}">
+            <File Id="Google.Apis.Auth.PlatformServices.pdb" Source=".\bin\x64\Release\Google.Apis.Auth.PlatformServices.pdb" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Auth.PlatformServices.xml" Guid="{B6D10EE9-A097-442C-B959-428D35B44C98}">
+            <File Id="Google.Apis.Auth.PlatformServices.xml" Source=".\bin\x64\Release\Google.Apis.Auth.PlatformServices.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Auth.dll" Guid="{8BF3761A-26D1-4501-B4E5-262FF6C5082E}">
+            <File Id="Google.Apis.Auth.dll" Source=".\bin\x64\Release\Google.Apis.Auth.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Auth.pdb" Guid="{2367F5EF-9C5F-49C5-AF1A-15E6C018FB58}">
+            <File Id="Google.Apis.Auth.pdb" Source=".\bin\x64\Release\Google.Apis.Auth.pdb" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Auth.xml" Guid="{4D6C3B21-0CFE-432C-8631-48DA5AED68AD}">
+            <File Id="Google.Apis.Auth.xml" Source=".\bin\x64\Release\Google.Apis.Auth.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Authentication.OAuth2.dll" Guid="{DD1947C3-C351-4351-BF50-979B164D805A}">
+            <File Id="Google.Apis.Authentication.OAuth2.dll" Source=".\bin\x64\Release\Google.Apis.Authentication.OAuth2.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Authentication.OAuth2.pdb" Guid="{37A4ACB8-EA28-4647-BB7D-84D15A42B8C7}">
+            <File Id="Google.Apis.Authentication.OAuth2.pdb" Source=".\bin\x64\Release\Google.Apis.Authentication.OAuth2.pdb" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Authentication.OAuth2.xml" Guid="{3D98C38E-82AD-4212-A82A-A1AA2EBE9426}">
+            <File Id="Google.Apis.Authentication.OAuth2.xml" Source=".\bin\x64\Release\Google.Apis.Authentication.OAuth2.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Calendar.v3.dll" Guid="{463C127A-661F-4200-A8EB-AC84B01EFB4E}">
+            <File Id="Google.Apis.Calendar.v3.dll" Source=".\bin\x64\Release\Google.Apis.Calendar.v3.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Calendar.v3.pdb" Guid="{BCB2FEAA-4FE7-4E9B-972B-A6B61668152E}">
+            <File Id="Google.Apis.Calendar.v3.pdb" Source=".\bin\x64\Release\Google.Apis.Calendar.v3.pdb" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Calendar.v3.xml" Guid="{0ECF27AE-E406-4A30-9575-1BFB56F02186}">
+            <File Id="Google.Apis.Calendar.v3.xml" Source=".\bin\x64\Release\Google.Apis.Calendar.v3.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Core.dll" Guid="{630F07E8-9E71-4B3E-8793-70A4FF4C2101}">
+            <File Id="Google.Apis.Core.dll" Source=".\bin\x64\Release\Google.Apis.Core.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Core.pdb" Guid="{DFF63BBE-F90F-43E4-84DD-3104464C1387}">
+            <File Id="Google.Apis.Core.pdb" Source=".\bin\x64\Release\Google.Apis.Core.pdb" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.Core.xml" Guid="{26B9768D-D1F8-4393-AD8B-7ACDF4C405D1}">
+            <File Id="Google.Apis.Core.xml" Source=".\bin\x64\Release\Google.Apis.Core.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.PlatformServices.dll" Guid="{444E6A4A-B6CC-4ADA-A2ED-001E50B3D9D0}">
+            <File Id="Google.Apis.PlatformServices.dll" Source=".\bin\x64\Release\Google.Apis.PlatformServices.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.PlatformServices.pdb" Guid="{83143548-D46F-4158-A540-7E7C5B958E88}">
+            <File Id="Google.Apis.PlatformServices.pdb" Source=".\bin\x64\Release\Google.Apis.PlatformServices.pdb" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.PlatformServices.xml" Guid="{7D087F7A-106C-4045-BF17-4EFF395BFC9B}">
+            <File Id="Google.Apis.PlatformServices.xml" Source=".\bin\x64\Release\Google.Apis.PlatformServices.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.dll" Guid="{D5CA8DA9-D234-430A-8D3D-1F1571E05981}">
+            <File Id="Google.Apis.dll" Source=".\bin\x64\Release\Google.Apis.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.pdb" Guid="{CACF6BCF-EF15-48F8-8170-6B9A24A461DF}">
+            <File Id="Google.Apis.pdb" Source=".\bin\x64\Release\Google.Apis.pdb" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Google.Apis.xml" Guid="{18FF0EFB-8EB6-41B0-8C91-FFA690F6614B}">
+            <File Id="Google.Apis.xml" Source=".\bin\x64\Release\Google.Apis.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Microsoft.Threading.Tasks.Extensions.Desktop.dll" Guid="{6C1E0D83-80CD-4C30-A63B-5EA04423477F}">
+            <File Id="Microsoft.Threading.Tasks.Extensions.Desktop.dll" Source=".\bin\x64\Release\Microsoft.Threading.Tasks.Extensions.Desktop.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Microsoft.Threading.Tasks.Extensions.Desktop.xml" Guid="{39044199-EFD9-43CF-80D2-C3BA8927C487}">
+            <File Id="Microsoft.Threading.Tasks.Extensions.Desktop.xml" Source=".\bin\x64\Release\Microsoft.Threading.Tasks.Extensions.Desktop.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Microsoft.Threading.Tasks.Extensions.dll" Guid="{F1F0C405-3AEB-4D1A-BB86-657044FC496D}">
+            <File Id="Microsoft.Threading.Tasks.Extensions.dll" Source=".\bin\x64\Release\Microsoft.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Microsoft.Threading.Tasks.Extensions.xml" Guid="{148E4078-4F8A-46EE-AC72-897E80FEB249}">
+            <File Id="Microsoft.Threading.Tasks.Extensions.xml" Source=".\bin\x64\Release\Microsoft.Threading.Tasks.Extensions.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Microsoft.Threading.Tasks.dll" Guid="{049EEAC2-BCD7-4B47-BFC1-E683F5159ABD}">
+            <File Id="Microsoft.Threading.Tasks.dll" Source=".\bin\x64\Release\Microsoft.Threading.Tasks.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Microsoft.Threading.Tasks.xml" Guid="{7EA97557-08EF-414C-8603-520DA0E0A0AA}">
+            <File Id="Microsoft.Threading.Tasks.xml" Source=".\bin\x64\Release\Microsoft.Threading.Tasks.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Newtonsoft.Json.dll" Guid="{B6D75A20-9F1F-4C04-8378-27253C6DC588}">
+            <File Id="Newtonsoft.Json.dll" Source=".\bin\x64\Release\Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Newtonsoft.Json.xml" Guid="{5651D024-4769-40CD-8E93-83EE07CD9610}">
+            <File Id="Newtonsoft.Json.xml" Source=".\bin\x64\Release\Newtonsoft.Json.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="OutlookGoogleSync.exe" Guid="*">
+            <File Id="OutlookGoogleSync.exe" Source=".\bin\x64\Release\OutlookGoogleSync.exe" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.IO.dll" Guid="{845110F8-30EB-4C43-B2ED-6EEDB839D418}">
+            <File Id="System.IO.dll" Source=".\bin\x64\Release\System.IO.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.IO.xml" Guid="{38FB44AC-0E1D-4CA1-A571-495499A996A9}">
+            <File Id="System.IO.xml" Source=".\bin\x64\Release\System.IO.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.Extensions.dll" Guid="{3EEF3105-FA25-4BA4-8991-3D8D9D72710A}">
+            <File Id="System.Net.Http.Extensions.dll" Source=".\bin\x64\Release\System.Net.Http.Extensions.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.Extensions.xml" Guid="{08B635C1-E006-4311-B1FE-EF664CD57FF9}">
+            <File Id="System.Net.Http.Extensions.xml" Source=".\bin\x64\Release\System.Net.Http.Extensions.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.Primitives.dll" Guid="{899F1EA5-30EE-4E7E-9726-6AF756D66803}">
+            <File Id="System.Net.Http.Primitives.dll" Source=".\bin\x64\Release\System.Net.Http.Primitives.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.Primitives.xml" Guid="{395F38DD-E737-4A57-BAF9-963C706E794D}">
+            <File Id="System.Net.Http.Primitives.xml" Source=".\bin\x64\Release\System.Net.Http.Primitives.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.WebRequest.dll" Guid="{51B3BADE-839D-4F80-BEE8-89DA13F2A8D1}">
+            <File Id="System.Net.Http.WebRequest.dll" Source=".\bin\x64\Release\System.Net.Http.WebRequest.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.WebRequest.xml" Guid="{A337AD44-6D1B-497C-AE6A-C910B3F182F4}">
+            <File Id="System.Net.Http.WebRequest.xml" Source=".\bin\x64\Release\System.Net.Http.WebRequest.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.dll" Guid="{07D9A754-8982-44E2-B10B-4658B6869410}">
+            <File Id="System.Net.Http.dll" Source=".\bin\x64\Release\System.Net.Http.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Net.Http.xml" Guid="{7F838891-056F-47EB-838E-258E2F265763}">
+            <File Id="System.Net.Http.xml" Source=".\bin\x64\Release\System.Net.Http.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Runtime.dll" Guid="{B6C1A7BF-E1B5-42F0-A7D3-3B1B5A4C5CAA}">
+            <File Id="System.Runtime.dll" Source=".\bin\x64\Release\System.Runtime.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Runtime.xml" Guid="{5F0D60A5-E6E0-4647-A9B0-01266E61D1B8}">
+            <File Id="System.Runtime.xml" Source=".\bin\x64\Release\System.Runtime.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Threading.Tasks.dll" Guid="{F65D432D-2244-4489-AC63-B63B2191FE2E}">
+            <File Id="System.Threading.Tasks.dll" Source=".\bin\x64\Release\System.Threading.Tasks.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="System.Threading.Tasks.xml" Guid="{FA1EE99B-0687-43D0-97C2-96912D3E2B13}">
+            <File Id="System.Threading.Tasks.xml" Source=".\bin\x64\Release\System.Threading.Tasks.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Zlib.Portable.dll" Guid="{7381C87C-6B3B-4D82-9DA1-FA38E3849469}">
+            <File Id="Zlib.Portable.dll" Source=".\bin\x64\Release\Zlib.Portable.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="Zlib.Portable.xml" Guid="{602D0E8D-C03F-44FC-B46F-B422608B15A6}">
+            <File Id="Zlib.Portable.xml" Source=".\bin\x64\Release\Zlib.Portable.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="log4net.dll" Guid="{ECFC3BA7-614A-44E0-9A6B-6DFF9EA1B401}">
+            <File Id="log4net.dll" Source=".\bin\x64\Release\log4net.dll" KeyPath="yes" Checksum="yes"/>
+         </Component>
+         <Component Id="log4net.xml" Guid="{2FA9D9C9-22BE-429A-835F-12DC060AB73E}">
+            <File Id="log4net.xml" Source=".\bin\x64\Release\log4net.xml" KeyPath="yes" Checksum="yes"/>
+         </Component>
+
+         <ComponentRef Id="ApplicationShortcut" />
+      </ComponentGroup>
+   </Fragment>
+</Wix>
