@@ -20,7 +20,7 @@ namespace OutlookGoogleSync
       public static MainForm Instance;
 
       public const string FILENAME = "settings.xml";
-      public const string VERSION = "0.0.2";
+      public readonly string VERSION = System.Windows.Forms.Application.ProductVersion;
 
       public Timer ogstimer;
       public DateTime oldtime;
