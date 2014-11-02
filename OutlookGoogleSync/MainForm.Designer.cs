@@ -42,6 +42,7 @@ namespace OutlookGoogleSync
          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
          this.tabControl1 = new System.Windows.Forms.TabControl();
          this.tabPage1 = new System.Windows.Forms.TabPage();
+         this.clearUserPropertiesBtn = new System.Windows.Forms.Button();
          this.lNextSync = new System.Windows.Forms.Label();
          this.lLastSync = new System.Windows.Forms.Label();
          this.LogBox = new System.Windows.Forms.TextBox();
@@ -80,7 +81,6 @@ namespace OutlookGoogleSync
          this.linkLabel1 = new System.Windows.Forms.LinkLabel();
          this.label4 = new System.Windows.Forms.Label();
          this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-         this.clearUserPropertiesBtn = new System.Windows.Forms.Button();
          this.tabControl1.SuspendLayout();
          this.tabPage1.SuspendLayout();
          this.tabPage2.SuspendLayout();
@@ -119,6 +119,16 @@ namespace OutlookGoogleSync
          this.tabPage1.TabIndex = 0;
          this.tabPage1.Text = "Sync";
          this.tabPage1.UseVisualStyleBackColor = true;
+         // 
+         // clearUserPropertiesBtn
+         // 
+         this.clearUserPropertiesBtn.Location = new System.Drawing.Point(361, 442);
+         this.clearUserPropertiesBtn.Name = "clearUserPropertiesBtn";
+         this.clearUserPropertiesBtn.Size = new System.Drawing.Size(120, 31);
+         this.clearUserPropertiesBtn.TabIndex = 3;
+         this.clearUserPropertiesBtn.Text = "Clear Properties (Dev)";
+         this.clearUserPropertiesBtn.UseVisualStyleBackColor = true;
+         this.clearUserPropertiesBtn.Click += new System.EventHandler(this.clearUserPropertiesBtn_Click);
          // 
          // lNextSync
          // 
@@ -360,6 +370,7 @@ namespace OutlookGoogleSync
          this.tbMinuteOffsets.Size = new System.Drawing.Size(106, 20);
          this.tbMinuteOffsets.TabIndex = 5;
          this.tbMinuteOffsets.TextChanged += new System.EventHandler(this.TbMinuteOffsetsTextChanged);
+         this.tbMinuteOffsets.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NumericOnlyKeyPress);
          // 
          // groupBox2
          // 
@@ -432,6 +443,7 @@ namespace OutlookGoogleSync
          this.tbDaysInTheFuture.Size = new System.Drawing.Size(39, 20);
          this.tbDaysInTheFuture.TabIndex = 4;
          this.tbDaysInTheFuture.TextChanged += new System.EventHandler(this.TbDaysInTheFutureTextChanged);
+         this.tbDaysInTheFuture.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NumericOnlyKeyPress);
          // 
          // tbDaysInThePast
          // 
@@ -440,6 +452,7 @@ namespace OutlookGoogleSync
          this.tbDaysInThePast.Size = new System.Drawing.Size(39, 20);
          this.tbDaysInThePast.TabIndex = 3;
          this.tbDaysInThePast.TextChanged += new System.EventHandler(this.TbDaysInThePastTextChanged);
+         this.tbDaysInThePast.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NumericOnlyKeyPress);
          // 
          // label2
          // 
@@ -507,16 +520,6 @@ namespace OutlookGoogleSync
          this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
          this.notifyIcon1.Text = "OutlookGoogleSync";
          this.notifyIcon1.Click += new System.EventHandler(this.NotifyIcon1Click);
-         // 
-         // clearUserPropertiesBtn
-         // 
-         this.clearUserPropertiesBtn.Location = new System.Drawing.Point(361, 442);
-         this.clearUserPropertiesBtn.Name = "clearUserPropertiesBtn";
-         this.clearUserPropertiesBtn.Size = new System.Drawing.Size(120, 31);
-         this.clearUserPropertiesBtn.TabIndex = 3;
-         this.clearUserPropertiesBtn.Text = "Clear Properties (Dev)";
-         this.clearUserPropertiesBtn.UseVisualStyleBackColor = true;
-         this.clearUserPropertiesBtn.Click += new System.EventHandler(this.clearUserPropertiesBtn_Click);
          // 
          // MainForm
          // 

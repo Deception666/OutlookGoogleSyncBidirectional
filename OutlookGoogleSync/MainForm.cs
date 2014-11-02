@@ -681,12 +681,22 @@ namespace OutlookGoogleSync
 
       void TbDaysInThePastTextChanged(object sender, EventArgs e)
       {
-         Settings.Instance.DaysInThePast = int.Parse(tbDaysInThePast.Text);
+         Settings.Instance.DaysInThePast = 0;
+
+         if (tbDaysInThePast.Text.Length != 0)
+         {
+            Settings.Instance.DaysInThePast = int.Parse(tbDaysInThePast.Text);
+         }
       }
 
       void TbDaysInTheFutureTextChanged(object sender, EventArgs e)
       {
-         Settings.Instance.DaysInTheFuture = int.Parse(tbDaysInTheFuture.Text);
+         Settings.Instance.DaysInTheFuture = 0;
+
+         if (tbDaysInTheFuture.Text.Length != 0)
+         {
+            Settings.Instance.DaysInTheFuture = int.Parse(tbDaysInTheFuture.Text);
+         }
       }
 
       void TbMinuteOffsetsTextChanged(object sender, EventArgs e)
@@ -898,6 +908,16 @@ namespace OutlookGoogleSync
          // restore button presses...
          bSyncNow.Enabled = true;
          clearUserPropertiesBtn.Enabled = true;
+      }
+
+      private void NumericOnlyKeyPress(object sender, KeyPressEventArgs e)
+      {
+         string allowed_chars = "0123456789\b";
+
+         if (allowed_chars.IndexOf(e.KeyChar) == -1)
+         {
+            e.Handled = true;
+         }
       }
    }
 }
