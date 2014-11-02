@@ -19,8 +19,9 @@ namespace OutlookGoogleSync
    {
       public static MainForm Instance;
 
-      public const string FILENAME = "settings.xml";
-      public readonly string VERSION = System.Windows.Forms.Application.ProductVersion;
+      public static readonly string LOCAL_APP_DATA = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + "\\OutlookGoogleSync";
+      public static readonly string FILENAME = LOCAL_APP_DATA + "\\settings.xml";
+      public static readonly string VERSION = System.Windows.Forms.Application.ProductVersion;
 
       public Timer ogstimer;
       public DateTime oldtime;
@@ -30,6 +31,11 @@ namespace OutlookGoogleSync
 
       public MainForm()
       {
+         if (System.IO.Directory.Exists(LOCAL_APP_DATA) == false)
+         {
+            System.IO.Directory.CreateDirectory(LOCAL_APP_DATA);
+         }
+
          InitializeComponent();
          label4.Text = label4.Text.Replace("{version}", VERSION);
 
@@ -611,7 +617,7 @@ namespace OutlookGoogleSync
          
          if (cbCreateFiles.Checked)
          {
-            TextWriter tw = new StreamWriter("export_found_in_outlook.txt");
+            TextWriter tw = new StreamWriter(LOCAL_APP_DATA + "\\export_found_in_outlook.txt");
             foreach (AppointmentItem ai in OutlookEntries)
             {
                tw.WriteLine(signature(ai));
@@ -627,7 +633,7 @@ namespace OutlookGoogleSync
 
          if (cbCreateFiles.Checked)
          {
-            TextWriter tw = new StreamWriter("export_found_in_google.txt");
+            TextWriter tw = new StreamWriter(LOCAL_APP_DATA + "\\export_found_in_google.txt");
             foreach (Event ev in GoogleEntries)
             {
                tw.WriteLine(signature(ev));
@@ -772,7 +778,7 @@ namespace OutlookGoogleSync
       public void HandleException(System.Exception ex)
       {
          MessageBox.Show(ex.ToString(), "Exception!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-         TextWriter tw = new StreamWriter("exception.txt");
+         TextWriter tw = new StreamWriter(LOCAL_APP_DATA + "\\exception.txt");
          tw.WriteLine(ex.ToString());
          tw.Close();
 
