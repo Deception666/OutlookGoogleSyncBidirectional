@@ -238,10 +238,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir).\wix\candle.exe" -arch x64 -out "$(SolutionDir).\Install\OutlookGoogleSync.wixobj" "$(SolutionDir).\OutlookGoogleSync\OutlookGoogleSync.wxs"
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
+rmdir /s /q "$(SolutionDir).\Install"
+"$(SolutionDir).\wix\candle.exe" -arch x64 -out "$(SolutionDir).\Install\OutlookGoogleSync.wixobj" "$(SolutionDir).\OutlookGoogleSync\OutlookGoogleSync.wxs"
 "$(SolutionDir).\wix\light.exe" -b "$(SolutionDir).\OutlookGoogleSync" -out "$(SolutionDir)\Install\OutlookGoogleSync.msi" "$(SolutionDir).\Install\OutlookGoogleSync.wixobj"
 rmdir /s /q "$(TargetDir).\..\OutlookGoogleSync"
 xcopy "$(TargetDir).\*.*" "$(TargetDir).\..\OutlookGoogleSync\"
-"$(SolutionDir).\7-Zip\7z.exe" a -xr!settings.xml -xr!*.txt "$(SolutionDir)\Install\OutlookGoogleSync.zip" "$(TargetDir).\..\OutlookGoogleSync\"</PostBuildEvent>
+"$(SolutionDir).\7-Zip\7z.exe" a -xr!settings.xml -xr!*.txt "$(SolutionDir)\Install\OutlookGoogleSync.zip" "$(TargetDir).\..\OutlookGoogleSync\"
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>
