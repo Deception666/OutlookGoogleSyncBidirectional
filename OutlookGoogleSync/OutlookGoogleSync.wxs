@@ -4,7 +4,7 @@
       <Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated" Manufacturer="https://outlookgooglesyncbidirectional.codeplex.com/" />
 
       <MajorUpgrade DowngradeErrorMessage="A newer version of OutlookGoogleSync is already installed." />
-      <MediaTemplate />
+      <MediaTemplate EmbedCab="yes" />
 
       <Feature Id="ApplicationInstall" Title="OutlookGoolgeSync" Description="https://outlookgooglesyncbidirectional.codeplex.com/" Level="1">
          <ComponentGroupRef Id="ApplicationInstallComponents" />
