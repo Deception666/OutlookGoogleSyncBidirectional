@@ -129,6 +129,9 @@
          <Component Id="OutlookGoogleSync.exe" Guid="*">
             <File Id="OutlookGoogleSync.exe" Source=".\bin\x64\Release\OutlookGoogleSync.exe" KeyPath="yes" Checksum="yes"/>
          </Component>
+         <Component Id="OutlookGoogleSync.exe.config" Guid="*">
+            <File Id="OutlookGoogleSync.exe.config" Source=".\bin\x64\Release\OutlookGoogleSync.exe.config" KeyPath="yes" Checksum="yes"/>
+         </Component>
          <Component Id="System.IO.dll" Guid="{845110F8-30EB-4C43-B2ED-6EEDB839D418}">
             <File Id="System.IO.dll" Source=".\bin\x64\Release\System.IO.dll" KeyPath="yes" Checksum="yes"/>
          </Component>
