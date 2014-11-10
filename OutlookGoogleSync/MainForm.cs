@@ -190,7 +190,9 @@ namespace OutlookGoogleSync
                }
                else
                {
-                  logboxout("Initializing Google calendar service for the following Google user: " + user_account_form.UserAccount);
+                  logboxout("Initializing Google calendar service for the following Google user: " +
+                             Settings.Instance.UseGoogleCalendar.User + " (" +
+                             Settings.Instance.UseGoogleCalendar.Name + ")");
 
                   calendars = GoogleCalendar.Instance.getCalendars();
                }

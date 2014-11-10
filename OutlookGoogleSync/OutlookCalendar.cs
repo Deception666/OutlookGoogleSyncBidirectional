@@ -241,6 +241,10 @@ namespace OutlookGoogleSync
             e.ExtendedProperties = new Event.ExtendedPropertiesData();
             e.ExtendedProperties.Private = new Dictionary< string, string >();
          }
+         else if (e.ExtendedProperties.Private == null)
+         {
+            e.ExtendedProperties.Private = new Dictionary< string, string >();
+         }
 
          e.ExtendedProperties.Private[EventPropertyKey] = OutlookCalendar.FormatEventID(ai);
       }
