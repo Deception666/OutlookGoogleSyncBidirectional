@@ -346,6 +346,12 @@ namespace OutlookGoogleSync
 
       // defines the property name for associating google events to outlook events
       public string EventPropertyKey { get; set; }
+
+      // simple time format helper
+      public static string FormatTime( EventDateTime edt )
+      {
+         return edt.DateTime != null ? edt.DateTime.ToString() : edt.Date != null ? edt.Date.ToString() : "N/A";
+      }
    }
 
 }

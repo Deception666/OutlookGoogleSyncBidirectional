@@ -365,7 +365,7 @@ namespace OutlookGoogleSync
                else
                {
                   // give some indication of what will take place
-                  logboxout("Creating Google event: " + oitem.Subject);
+                  logboxout("Creating Google event: " + oitem.Subject + " (" + oitem.Start + ")");
 
                   // the property does not exist... this mean that google calendar
                   // does not have this outlook entry...  after this call, the outlook item
@@ -392,7 +392,7 @@ namespace OutlookGoogleSync
                if (gitem == null)
                {
                   // give some indication of what will take place
-                  logboxout("Removing Outlook event: " + oitem.Subject);
+                  logboxout("Removing Outlook event: " + oitem.Subject + " (" + oitem.Start + ")");
 
                   // the item does not exist, so it was removed from google calendar
                   // since it was removed from google, remove it from outlook
@@ -414,7 +414,7 @@ namespace OutlookGoogleSync
                   if (signature(oitem) != signature(gitem) && oitem.LastModificationTime > gitem.Updated)
                   {
                      // give some indication of what will take place
-                     logboxout("Updating Google event: " + gitem.Summary);
+                     logboxout("Updating Google event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ") ==> " + oitem.Subject + " (" + oitem.Start + ")");
 
                      // update the event based on the outlook item
                      GoogleCalendar.Instance.updateEntry(gitem, oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
@@ -473,7 +473,7 @@ namespace OutlookGoogleSync
                if (oitem != null)
                {
                   // give some indication of what will take place
-                  logboxout("Binding Outlook and Google event: " + gitem.Summary + " (" + gitem.Start + ")");
+                  logboxout("Binding Outlook and Google event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
 
                   // bind the properties together
                   OutlookCalendar.Instance.Bind(oitem, gitem);
@@ -498,7 +498,7 @@ namespace OutlookGoogleSync
                else
                {
                   // give some indication of what will take place
-                  logboxout("Creating Outlook event: " + gitem.Summary);
+                  logboxout("Creating Outlook event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
 
                   // the property does not exist... this means that the outlook calendar
                   // does not have this google entry...  after this call, the outlook item
@@ -531,7 +531,7 @@ namespace OutlookGoogleSync
                if (oitem == null)
                {
                   // give some indication of what will take place
-                  logboxout("Removing Google event: " + gitem.Summary);
+                  logboxout("Removing Google event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
 
                   // the item does not exist, so it was removed from outlook calendar
                   // since it was removed from outlook, remove it from google
@@ -552,7 +552,7 @@ namespace OutlookGoogleSync
                   if (signature(gitem) != signature(oitem) && gitem.Updated > oitem.LastModificationTime)
                   {
                      // give some indication of what will take place
-                     logboxout("Updating Outlook event: " + oitem.Subject);
+                     logboxout("Updating Outlook event: " + oitem.Subject + " (" + oitem.Start + ") ==> " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
 
                      // update the event based on the google item
                      OutlookCalendar.Instance.updateEntry(oitem, gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
