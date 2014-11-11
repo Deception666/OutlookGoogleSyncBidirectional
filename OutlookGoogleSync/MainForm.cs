@@ -462,9 +462,9 @@ namespace OutlookGoogleSync
                   // the user has to type it the same in both cases to make a match...
                   // is there something better here?
                   if (signature(o).ToLower() == signature(gitem).ToLower() &&
-                     (oitem.UserProperties == null ||
-                      oitem.UserProperties.Find(EventPropertyKey) == null ||
-                      oitem.UserProperties.Find(EventPropertyKey).Value == gitem.Id))
+                     (o.UserProperties == null ||
+                      o.UserProperties.Find(EventPropertyKey) == null ||
+                      o.UserProperties.Find(EventPropertyKey).Value == gitem.Id))
                   {
                      oitem = o; break;
                   }
