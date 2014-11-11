@@ -89,12 +89,6 @@ namespace OutlookGoogleSync
                logboxout("Unable to initialize Google calendar service for the following Google user: " +
                          Settings.Instance.UseGoogleCalendar.User);
             }
-            else
-            {
-               logboxout("Initializing Google calendar service for the following Google user: " +
-                         Settings.Instance.UseGoogleCalendar.User + " (" +
-                         Settings.Instance.UseGoogleCalendar.Name + ")");
-            }
          }
 
          //Start in tray?
@@ -190,10 +184,6 @@ namespace OutlookGoogleSync
                }
                else
                {
-                  logboxout("Initializing Google calendar service for the following Google user: " +
-                             Settings.Instance.UseGoogleCalendar.User + " (" +
-                             Settings.Instance.UseGoogleCalendar.Name + ")");
-
                   calendars = GoogleCalendar.Instance.getCalendars();
                }
             }
@@ -685,6 +675,10 @@ namespace OutlookGoogleSync
       void ComboBox1SelectedIndexChanged(object sender, EventArgs e)
       {
          Settings.Instance.UseGoogleCalendar = (MyCalendarListEntry)cbCalendars.SelectedItem;
+
+         logboxout("Initializing Google calendar service for the following Google user: " +
+                   Settings.Instance.UseGoogleCalendar.User + " (" +
+                   Settings.Instance.UseGoogleCalendar.Name + ")");
       }
 
       void TbDaysInThePastTextChanged(object sender, EventArgs e)
