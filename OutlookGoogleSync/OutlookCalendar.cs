@@ -239,14 +239,14 @@ namespace OutlookGoogleSync
          if (e.ExtendedProperties == null)
          {
             e.ExtendedProperties = new Event.ExtendedPropertiesData();
-            e.ExtendedProperties.Private = new Dictionary< string, string >();
+            e.ExtendedProperties.Shared = new Dictionary< string, string >();
          }
-         else if (e.ExtendedProperties.Private == null)
+         else if (e.ExtendedProperties.Shared == null)
          {
-            e.ExtendedProperties.Private = new Dictionary< string, string >();
+            e.ExtendedProperties.Shared = new Dictionary< string, string >();
          }
 
-         e.ExtendedProperties.Private[EventPropertyKey] = OutlookCalendar.FormatEventID(ai);
+         e.ExtendedProperties.Shared[EventPropertyKey] = OutlookCalendar.FormatEventID(ai);
       }
 
       // one attendee per line

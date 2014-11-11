@@ -329,9 +329,9 @@ namespace OutlookGoogleSync
                   // is there something better here?
                   if (signature(g).ToLower() == signature(oitem).ToLower() &&
                      (g.ExtendedProperties == null ||
-                      g.ExtendedProperties.Private == null ||
-                      g.ExtendedProperties.Private.ContainsKey(EventPropertyKey) == false ||
-                      g.ExtendedProperties.Private[EventPropertyKey] == OutlookCalendar.FormatEventID(oitem)))
+                      g.ExtendedProperties.Shared == null ||
+                      g.ExtendedProperties.Shared.ContainsKey(EventPropertyKey) == false ||
+                      g.ExtendedProperties.Shared[EventPropertyKey] == OutlookCalendar.FormatEventID(oitem)))
                   {
                      gitem = g; break;
                   }
@@ -443,10 +443,10 @@ namespace OutlookGoogleSync
             // determine first if this google item is associated with an outlook calendar item...
             string outlook_id = null;
             if (gitem.ExtendedProperties != null &&
-                gitem.ExtendedProperties.Private != null &&
-                gitem.ExtendedProperties.Private.ContainsKey(EventPropertyKey))
+                gitem.ExtendedProperties.Shared != null &&
+                gitem.ExtendedProperties.Shared.ContainsKey(EventPropertyKey))
             {
-               outlook_id = gitem.ExtendedProperties.Private[EventPropertyKey];
+               outlook_id = gitem.ExtendedProperties.Shared[EventPropertyKey];
             }
 
             if (outlook_id == null)
@@ -888,12 +888,12 @@ namespace OutlookGoogleSync
             {
                if (e != null &&
                    e.ExtendedProperties != null &&
-                   e.ExtendedProperties.Private != null &&
-                   e.ExtendedProperties.Private.ContainsKey(GoogleCalendar.Instance.EventPropertyKey))
+                   e.ExtendedProperties.Shared != null &&
+                   e.ExtendedProperties.Shared.ContainsKey(GoogleCalendar.Instance.EventPropertyKey))
                {
                   logboxout("Clearing Google property: " + e.Summary);
 
-                  e.ExtendedProperties.Private.Remove(GoogleCalendar.Instance.EventPropertyKey);
+                  e.ExtendedProperties.Shared.Remove(GoogleCalendar.Instance.EventPropertyKey);
 
                   GoogleCalendar.Instance.updateEntry(e);
                }
