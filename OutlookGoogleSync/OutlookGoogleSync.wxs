@@ -30,6 +30,11 @@
                       Description="OutlookGoogleSync !(bind.FileVersion.OutlookGoogleSync.exe)"
                       Target="[#OutlookGoogleSync.exe]"
                       WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+            <Shortcut Id="UninstallProduct"
+                      Name="Uninstall"
+                      Target="[System64Folder]msiexec.exe"
+                      Arguments="/x [ProductCode]"
+                      Description="Uninstalls OutlookGoogleSync" />
             <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
             <RegistryValue Root="HKCU" Key="Software\Microsoft\OutlookGoogleSync" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
          </Component>
