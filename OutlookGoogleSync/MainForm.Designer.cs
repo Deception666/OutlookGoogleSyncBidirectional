@@ -500,7 +500,7 @@ namespace OutlookGoogleSync
          this.linkLabel1.Size = new System.Drawing.Size(475, 22);
          this.linkLabel1.TabIndex = 2;
          this.linkLabel1.TabStop = true;
-         this.linkLabel1.Text = "http://outlookgooglesync.codeplex.com/";
+         this.linkLabel1.Text = "https://outlookgooglesyncbidirectional.codeplex.com/";
          this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
          this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel1LinkClicked);
          // 
