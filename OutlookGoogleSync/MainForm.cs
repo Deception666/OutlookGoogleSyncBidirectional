@@ -77,7 +77,7 @@ namespace OutlookGoogleSync
          cbCreateFiles.Checked = Settings.Instance.CreateTextFiles;
          outlookAutoLogonCheckBox.Checked = Settings.Instance.OutlookAutoLogonEnabled;
          outlookAutoLogonTextBox.Text = Settings.Instance.OutlookAutoLogonProfileName;
-         outlookAutoLogonPwdTextBox.Text = Settings.Instance.OutlookAutoLogonProfilePassword;
+         outlookAutoLogonPwdTextBox.Text = Settings.Instance.GetOutlookAutoLogonProfilePassword();
 
          // init the calendar service if the user is populated
          if (Settings.Instance.UseGoogleCalendar.User != "")
@@ -667,7 +667,7 @@ namespace OutlookGoogleSync
       void Save_Click(object sender, EventArgs e)
       {
          Settings.Instance.OutlookAutoLogonProfileName = outlookAutoLogonTextBox.Text;
-         Settings.Instance.OutlookAutoLogonProfilePassword = outlookAutoLogonPwdTextBox.Text;
+         Settings.Instance.SetOutlookAutoLogonProfilePassword(outlookAutoLogonPwdTextBox.Text);
 
          XMLManager.export(Settings.Instance, FILENAME);
       }

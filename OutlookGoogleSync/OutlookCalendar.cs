@@ -49,7 +49,7 @@ namespace OutlookGoogleSync
          else
          {
             // Log on by using the profile name given...
-            OutlookNamespace.Logon(Settings.Instance.OutlookAutoLogonProfileName, Settings.Instance.OutlookAutoLogonProfilePassword, false, true);
+            OutlookNamespace.Logon(Settings.Instance.OutlookAutoLogonProfileName, Settings.Instance.GetOutlookAutoLogonProfilePassword(), false, true);
          }
 
          //Alternate logon method that uses a specific profile.

@@ -43,14 +43,32 @@ namespace OutlookGoogleSync
       public bool AddAttendeesToDescription = true;
       public bool CreateTextFiles = true;
 
-      // TODO: the password needs a better location than in the xml file
       public string OutlookAutoLogonProfileName = "";
-      public string OutlookAutoLogonProfilePassword = "";
+      public byte[] OutlookAutoLogonProfilePassword = null;
       public bool OutlookAutoLogonEnabled = false;
 
-      public Settings()
+      public string GetOutlookAutoLogonProfilePassword( )
       {
+         string password = "";
 
+         if (OutlookAutoLogonProfilePassword.Length != 0)
+         {
+            password = System.Text.Encoding.ASCII.GetString(
+               System.Security.Cryptography.ProtectedData.Unprotect(OutlookAutoLogonProfilePassword,
+                                                                    null,
+                                                                    System.Security.Cryptography.DataProtectionScope.CurrentUser));
+         }
+
+         return password;
       }
+
+      public void SetOutlookAutoLogonProfilePassword( string password )
+      {
+         OutlookAutoLogonProfilePassword =
+            System.Security.Cryptography.ProtectedData.Protect(System.Text.Encoding.ASCII.GetBytes(password),
+                                                               null,
+                                                               System.Security.Cryptography.DataProtectionScope.CurrentUser);
+      }
+
    }
 }
