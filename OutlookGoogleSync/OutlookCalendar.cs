@@ -190,7 +190,7 @@ namespace OutlookGoogleSync
          }
 
          ai.Subject = e.Summary;
-         if (add_description) ai.Body = e.Description;
+         if (add_description) ai.Body = OutlookGoogleSync.Utilities.ObtainUserBodyData(e.Description);
          ai.Location = e.Location;
 
          // consider the reminder set in google
@@ -204,6 +204,8 @@ namespace OutlookGoogleSync
 
          if (add_attendees)
          {
+            ai.Body += Environment.NewLine + Environment.NewLine;
+            ai.Body += OutlookGoogleSync.Utilities.BODY_SEPARATOR;
             ai.Body += Environment.NewLine;
             ai.Body += Environment.NewLine + "==============================================";
             ai.Body += Environment.NewLine + "Added by OutlookGoogleSync:";
@@ -219,34 +221,7 @@ namespace OutlookGoogleSync
 
       public void Bind( AppointmentItem ai, Event e )
       {
-         // TODO: move to a utility function, as it matches that of google
-
-         // make sure to tag the user property of the google id
-         UserProperty oitem_google_prop = ai.UserProperties.Find(EventPropertyKey);
-
-         if (oitem_google_prop != null)
-         {
-            oitem_google_prop.Value = e.Id;
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem_google_prop);
-         }
-         else
-         {
-            ai.UserProperties.Add(EventPropertyKey, OlUserPropertyType.olText).Value = e.Id;
-         }
-
-         // make sure to tag the private property of the outlook id
-         if (e.ExtendedProperties == null)
-         {
-            e.ExtendedProperties = new Event.ExtendedPropertiesData();
-            e.ExtendedProperties.Shared = new Dictionary< string, string >();
-         }
-         else if (e.ExtendedProperties.Shared == null)
-         {
-            e.ExtendedProperties.Shared = new Dictionary< string, string >();
-         }
-
-         e.ExtendedProperties.Shared[EventPropertyKey] = OutlookCalendar.FormatEventID(ai);
+         OutlookGoogleSync.Utilities.BindEvents(ai, e, EventPropertyKey);
       }
 
       // one attendee per line

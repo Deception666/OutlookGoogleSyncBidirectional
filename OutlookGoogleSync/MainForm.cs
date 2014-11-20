@@ -1,6 +1,4 @@
-﻿//TODO: consider description updates?
-//TODO: optimize comparison algorithms
-using System;
+﻿using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
@@ -290,6 +288,8 @@ namespace OutlookGoogleSync
 
       void synchronize( List< AppointmentItem > outlook_items, List< Event > google_items )
       {
+         // TODO: consider description updates
+         // TODO: optimize comparison algorithms - this one not mine, but should consider for larger sets of data
          // TODO: outlook to google recurrence 90% complete
          //       getting weird error message from outlook: "The operation cannot be performed because the message has changed"
          //       need to determine what happens when deleting just the master recurrence object
@@ -642,11 +642,12 @@ namespace OutlookGoogleSync
       }
 
       //creates a standardized summary string with the key attributes of a calendar entry for comparison
-      public string signature(AppointmentItem ai)
+      public string signature( AppointmentItem ai )
       {
          return (ai.Start + ";" + ai.End + ";" + ai.Subject + ";" + ai.Location).Trim();
       }
-      public string signature(Event ev)
+
+      public string signature( Event ev )
       {
          string start_time = ev.Start.Date != null ?
                              DateTime.Parse(ev.Start.Date).ToString() :

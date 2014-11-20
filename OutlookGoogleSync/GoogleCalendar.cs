@@ -253,7 +253,7 @@ namespace OutlookGoogleSync
          }
 
          e.Summary = ai.Subject;
-         if (add_description) e.Description = ai.Body;
+         if (add_description) e.Description = OutlookGoogleSync.Utilities.ObtainUserBodyData(ai.Body);
          e.Location = ai.Location;
 
          // consider the reminder set in Outlook
@@ -270,7 +270,9 @@ namespace OutlookGoogleSync
 
          if (add_attendees)
          {
-            e.Description += Environment.NewLine;
+            e.Description += Environment.NewLine + Environment.NewLine;
+            e.Description += OutlookGoogleSync.Utilities.BODY_SEPARATOR;
+            e.Description += Environment.NewLine + Environment.NewLine;
             e.Description += Environment.NewLine + "==============================================";
             e.Description += Environment.NewLine + "Added by OutlookGoogleSync:" + Environment.NewLine;
             e.Description += Environment.NewLine + "ORGANIZER: " + Environment.NewLine + ai.Organizer + Environment.NewLine;
@@ -285,37 +287,7 @@ namespace OutlookGoogleSync
 
       private void UpdatePropertyIDs( Event e, AppointmentItem ai )
       {
-         // TODO: move to a utility function, as it matches that of outlook
-
-         // make sure to tag the private property of the outlook id
-         if (e.ExtendedProperties == null)
-         {
-            e.ExtendedProperties = new Event.ExtendedPropertiesData();
-            e.ExtendedProperties.Shared = new Dictionary< string, string >();
-         }
-         else if (e.ExtendedProperties.Shared == null)
-         {
-            e.ExtendedProperties.Shared = new Dictionary< string, string >();
-         }
-
-         e.ExtendedProperties.Shared[EventPropertyKey] = OutlookCalendar.FormatEventID(ai);
-
-         // make sure to tag the user property of the google id
-         UserProperty oitem_google_prop = ai.UserProperties.Find(EventPropertyKey);
-
-         if (oitem_google_prop != null)
-         {
-            oitem_google_prop.Value = e.Id;
-
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem_google_prop);
-         }
-         else
-         {
-            ai.UserProperties.Add(EventPropertyKey, OlUserPropertyType.olText).Value = e.Id;
-         }
-
-         // save the outlook event
-         ai.Save();
+         OutlookGoogleSync.Utilities.BindEvents(ai, e, EventPropertyKey);
       }
 
       public void Bind( Event e, AppointmentItem ai )

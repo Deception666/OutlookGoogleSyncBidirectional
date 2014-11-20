@@ -87,6 +87,7 @@
     <Compile Include="UserAccountForm.Designer.cs">
       <DependentUpon>UserAccountForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utilities.cs" />
     <Compile Include="XMLManager.cs" />
   </ItemGroup>
   <ItemGroup>
