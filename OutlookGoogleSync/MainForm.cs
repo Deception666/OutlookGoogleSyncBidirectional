@@ -411,10 +411,19 @@ namespace OutlookGoogleSync
                {
                   // the item does exist...
                   // determine if the event should be updated...
-                  if (signature(oitem) != signature(gitem) && oitem.LastModificationTime > gitem.Updated)
+                  if ((signature(oitem) != signature(gitem) ||
+                      OutlookGoogleSync.Utilities.ObtainUserBodyData(oitem.Body) != OutlookGoogleSync.Utilities.ObtainUserBodyData(gitem.Description)) &&
+                      oitem.LastModificationTime > gitem.Updated)
                   {
                      // give some indication of what will take place
-                     logboxout("Updating Google event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ") ==> " + oitem.Subject + " (" + oitem.Start + ")");
+                     if (signature(oitem) != signature(gitem))
+                     {
+                        logboxout("Updating Google event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ") ==> " + oitem.Subject + " (" + oitem.Start + ")");
+                     }
+                     else
+                     {
+                        logboxout("Updating Google event description: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
+                     }
 
                      // update the event based on the outlook item
                      GoogleCalendar.Instance.updateEntry(gitem, oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
@@ -549,10 +558,19 @@ namespace OutlookGoogleSync
 
                   // the item does exist...
                   // determine if the event should be updated...
-                  if (signature(gitem) != signature(oitem) && gitem.Updated > oitem.LastModificationTime)
+                  if ((signature(gitem) != signature(oitem) ||
+                      OutlookGoogleSync.Utilities.ObtainUserBodyData(oitem.Body) != OutlookGoogleSync.Utilities.ObtainUserBodyData(gitem.Description)) &&
+                      gitem.Updated > oitem.LastModificationTime)
                   {
                      // give some indication of what will take place
-                     logboxout("Updating Outlook event: " + oitem.Subject + " (" + oitem.Start + ") ==> " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
+                     if (signature(gitem) != signature(oitem))
+                     {
+                        logboxout("Updating Outlook event: " + oitem.Subject + " (" + oitem.Start + ") ==> " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
+                     }
+                     else
+                     {
+                        logboxout("Updating Outlook event description: " + oitem.Subject + " (" + oitem.Start + ")");
+                     }
 
                      // update the event based on the google item
                      OutlookCalendar.Instance.updateEntry(oitem, gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
