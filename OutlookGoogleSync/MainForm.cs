@@ -635,6 +635,9 @@ namespace OutlookGoogleSync
          logboxout("Found " + GoogleEntries.Count + " Google Calendar Entries.");
          logboxout("--------------------------------------------------");
 
+         // set the default reminder time of the google calendar for outlook
+         OutlookCalendar.Instance.GoogleDefaultReminderMinutesBeforeStart = GoogleCalendar.Instance.GetDefaultReminderMinutesBeforeStart();
+
          // synchronize both outlook and google calendars
          synchronize(OutlookEntries, GoogleEntries);
 

@@ -33,6 +33,8 @@ namespace OutlookGoogleSync
 
       public OutlookCalendar()
       {
+         // set the default google reminder time
+         GoogleDefaultReminderMinutesBeforeStart = 15;
 
          // Create the Outlook application.
          OutlookApplication = new Application();
@@ -194,11 +196,21 @@ namespace OutlookGoogleSync
          ai.Location = e.Location;
 
          // consider the reminder set in google
-         if (add_reminders && e.Reminders != null && e.Reminders.Overrides != null)
+         if (add_reminders)
          {
-            if (e.Reminders.Overrides.Count > 0)
+            if (e.Reminders != null)
             {
-               ai.ReminderMinutesBeforeStart = e.Reminders.Overrides[0].Minutes.Value;
+               if (e.Reminders.Overrides != null)
+               {
+                  if (e.Reminders.Overrides.Count > 0)
+                  {
+                     ai.ReminderMinutesBeforeStart = e.Reminders.Overrides[0].Minutes.Value;
+                  }
+               }
+               else if (e.Reminders.UseDefault != null && (bool)e.Reminders.UseDefault)
+               {
+                  ai.ReminderMinutesBeforeStart = GoogleDefaultReminderMinutesBeforeStart;
+               }
             }
          }
 
@@ -258,6 +270,9 @@ namespace OutlookGoogleSync
 
          return id;
       }
+
+      // defines the default google reminder trigger time in minutes
+      public int GoogleDefaultReminderMinutesBeforeStart { get; set; }
 
    }
 }

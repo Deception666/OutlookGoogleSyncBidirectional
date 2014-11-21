@@ -295,6 +295,33 @@ namespace OutlookGoogleSync
          UpdatePropertyIDs(e, ai);
       }
 
+      // default number of minutes before the start of the event when the reminder should trigger
+      public int GetDefaultReminderMinutesBeforeStart( )
+      {
+         int default_time = 15;
+
+         try
+         {
+            if (service != null)
+            {
+               var calendar = service.CalendarList.Get(Settings.Instance.UseGoogleCalendar.Id).Execute();
+
+               if (calendar != null &&
+                   calendar.DefaultReminders != null && calendar.DefaultReminders.Count > 0 &&
+                   calendar.DefaultReminders[0].Minutes != null)
+               {
+                  default_time = (int)calendar.DefaultReminders[0].Minutes;
+               }
+            }
+         }
+         catch (System.Exception)
+         {
+            // do nothing but return the default
+         }
+
+         return default_time;
+      }
+
       // returns the Google Time Format String of a given .Net DateTime value
       // Google Time Format = "2012-08-20T00:00:00+02:00"
       public string GoogleTimeFrom(DateTime dt)
