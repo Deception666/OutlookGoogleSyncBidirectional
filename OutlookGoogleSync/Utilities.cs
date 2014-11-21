@@ -10,7 +10,7 @@ class Utilities
 {
    // defines the body separator, separating the user information from what this application adds
    public static readonly string BODY_SEPARATOR =
-      "- - - - - - - - - - - - - - - - - - - - Outlook Google Sync - - - - - - - - - - - - - - - - - - - -";
+      "- - - - - - - - - - - - - - - - - - - - Outlook Google Sync Bidirectional - - - - - - - - - - - - - - - - - - - -";
 
    // obtains the text from the body / description up until the body separator
    public static string ObtainUserBodyData( string body )

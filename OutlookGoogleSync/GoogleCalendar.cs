@@ -274,7 +274,7 @@ namespace OutlookGoogleSync
             e.Description += OutlookGoogleSync.Utilities.BODY_SEPARATOR;
             e.Description += Environment.NewLine + Environment.NewLine;
             e.Description += Environment.NewLine + "==============================================";
-            e.Description += Environment.NewLine + "Added by OutlookGoogleSync:" + Environment.NewLine;
+            e.Description += Environment.NewLine + "Added by OutlookGoogleSync Bidirectional:" + Environment.NewLine;
             e.Description += Environment.NewLine + "ORGANIZER: " + Environment.NewLine + ai.Organizer + Environment.NewLine;
             e.Description += Environment.NewLine + "REQUIRED: " + Environment.NewLine + splitAttendees(ai.RequiredAttendees) + Environment.NewLine;
             e.Description += Environment.NewLine + "OPTIONAL: " + Environment.NewLine + splitAttendees(ai.OptionalAttendees);

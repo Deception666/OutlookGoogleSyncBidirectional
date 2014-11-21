@@ -220,7 +220,7 @@ namespace OutlookGoogleSync
             ai.Body += OutlookGoogleSync.Utilities.BODY_SEPARATOR;
             ai.Body += Environment.NewLine;
             ai.Body += Environment.NewLine + "==============================================";
-            ai.Body += Environment.NewLine + "Added by OutlookGoogleSync:";
+            ai.Body += Environment.NewLine + "Added by OutlookGoogleSync Bidirectional:";
             ai.Body += Environment.NewLine + "ORGANIZER: " + Environment.NewLine + e.Organizer.DisplayName;
             ai.Body += Environment.NewLine + "REQUIRED: " + Environment.NewLine + splitAttendees(e.Attendees, true);
             ai.Body += Environment.NewLine + "OPTIONAL: " + Environment.NewLine + splitAttendees(e.Attendees, false);
