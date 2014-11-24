@@ -195,6 +195,9 @@ namespace OutlookGoogleSync
          if (add_description) ai.Body = OutlookGoogleSync.Utilities.ObtainUserBodyData(e.Description);
          ai.Location = e.Location;
 
+         // determine how to set the status based on the google event
+         OutlookGoogleSync.Utilities.SetEventStatus(ai, e);
+
          // consider the reminder set in google
          if (add_reminders)
          {

@@ -288,7 +288,7 @@ namespace OutlookGoogleSync
 
       void synchronize( List< AppointmentItem > outlook_items, List< Event > google_items )
       {
-         // TODO: consider description updates
+         // TODO: consider description updates (only needs to be considered when checked... come back and fix this)
          // TODO: optimize comparison algorithms - this one not mine, but should consider for larger sets of data
          // TODO: outlook to google recurrence 90% complete
          //       getting weird error message from outlook: "The operation cannot be performed because the message has changed"
@@ -665,7 +665,7 @@ namespace OutlookGoogleSync
       //creates a standardized summary string with the key attributes of a calendar entry for comparison
       public string signature( AppointmentItem ai )
       {
-         return (ai.Start + ";" + ai.End + ";" + ai.Subject + ";" + ai.Location).Trim();
+         return (ai.Start + ";" + ai.End + ";" + ai.Subject + ";" + ai.Location + ";" + OutlookGoogleSync.Utilities.EventStatus(ai)).Trim();
       }
 
       public string signature( Event ev )
@@ -678,7 +678,7 @@ namespace OutlookGoogleSync
                            DateTime.Parse(ev.End.Date).ToString() :
                            ev.End.DateTime.ToString();
 
-         return (start_time + ";" + end_time + ";" + ev.Summary + ";" + ev.Location).Trim();
+         return (start_time + ";" + end_time + ";" + ev.Summary + ";" + ev.Location + ";" + OutlookGoogleSync.Utilities.EventStatus(ev)).Trim();
       }
 
       void logboxout(string s)

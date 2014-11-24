@@ -58,6 +58,99 @@ class Utilities
 
       gitem.ExtendedProperties.Shared[event_property_key] = OutlookCalendar.FormatEventID(oitem);
    }
+
+   // event status constants
+   public static readonly string EVENT_STATUS_FREE = "Free";
+   public static readonly string EVENT_STATUS_BUSY = "Busy";
+   public static readonly string EVENT_STATUS_TENTATIVE = "Tentative";
+
+   // determines the status of the event (busy / free / tentative)
+   public static string EventStatus( AppointmentItem ai )
+   {
+      string status = EVENT_STATUS_BUSY;
+
+      switch (ai.BusyStatus)
+      {
+         case OlBusyStatus.olFree: status = EVENT_STATUS_FREE; break;
+         case OlBusyStatus.olTentative: status = EVENT_STATUS_TENTATIVE; break;
+
+         case OlBusyStatus.olBusy:
+         case OlBusyStatus.olOutOfOffice:
+         case OlBusyStatus.olWorkingElsewhere:
+         default:
+
+            status = EVENT_STATUS_BUSY;
+
+            break;
+      }
+
+      return status;
+   }
+
+   // sets the correct event status for the outlook event based on the google event
+   public static void SetEventStatus( AppointmentItem ai, Event ev )
+   {
+      string google_status = EventStatus(ev);
+
+      if (google_status == EVENT_STATUS_FREE)
+      {
+         ai.BusyStatus = OlBusyStatus.olFree;
+      }
+      else if (google_status == EVENT_STATUS_TENTATIVE)
+      {
+         ai.BusyStatus = OlBusyStatus.olTentative;
+      }
+      else
+      {
+         ai.BusyStatus = OlBusyStatus.olBusy;
+      }
+   }
+
+   // determines the status of the event (busy / free / tentative)
+   public static string EventStatus( Event ev )
+   {
+      string status = EVENT_STATUS_BUSY;
+
+      if (ev.Status != null)
+      {
+         if (ev.Status == "confirmed" && (ev.Transparency == null || ev.Transparency == "opaque"))
+         {
+            status = EVENT_STATUS_BUSY;
+         }
+         else if (ev.Status == "confirmed" && ev.Transparency != null && ev.Transparency == "transparent")
+         {
+            status = EVENT_STATUS_FREE;
+         }
+         else if (ev.Status == "tentative")
+         {
+            status = EVENT_STATUS_TENTATIVE;
+         }
+      }
+
+      return status;
+   }
+
+   // sets the correct event status for the google event based on the outlook event
+   public static void SetEventStatus( Event ev, AppointmentItem ai )
+   {
+      string outlook_status = EventStatus(ai);
+
+      if (outlook_status == EVENT_STATUS_FREE)
+      {
+         ev.Status = "confirmed";
+         ev.Transparency = "transparent";
+      }
+      else if (outlook_status == EVENT_STATUS_TENTATIVE)
+      {
+         ev.Status = "tentative";
+         ev.Transparency = "transparent";
+      }
+      else
+      {
+         ev.Status = "confirmed";
+         ev.Transparency = "opaque";
+      }
+   }
 };
 
 } // namespace OutlookGoogleSync
