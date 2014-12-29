@@ -51,7 +51,7 @@ namespace OutlookGoogleSync
       {
          string password = "";
 
-         if (OutlookAutoLogonProfilePassword.Length != 0)
+         if (OutlookAutoLogonProfilePassword != null && OutlookAutoLogonProfilePassword.Length != 0)
          {
             password = System.Text.Encoding.ASCII.GetString(
                System.Security.Cryptography.ProtectedData.Unprotect(OutlookAutoLogonProfilePassword,
