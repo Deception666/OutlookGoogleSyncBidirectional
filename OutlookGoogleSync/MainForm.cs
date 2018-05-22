@@ -597,8 +597,18 @@ namespace OutlookGoogleSync
                      ++outlook_entries_updated;
                   }
 
-                  // save and close the outlook item
-                  ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
+                  try
+                  {
+                     // save and close the outlook item
+                     ((_AppointmentItem)oitem).Close(OlInspectorClose.olSave);
+                  }
+                  catch (System.Exception ex)
+                  {
+                     // unable to save the outlook entry for some reason...
+                     // let the user know and the reason why...
+                     logboxout("Error: Outlook event cannot be saved!");
+                     logboxout("Reason: " + ex.Message);
+                  }
 
                   // need to release the com reference
                   System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem);

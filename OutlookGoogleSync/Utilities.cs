@@ -42,8 +42,16 @@ class Utilities
          oitem.UserProperties.Add(event_property_key, OlUserPropertyType.olText).Value = gitem.Id;
       }
 
-      // save the outlook event
-      oitem.Save();
+      try
+      {
+         // save the outlook event
+         oitem.Save();
+      }
+      catch (System.Exception)
+      {
+         // unable to save the outlook item...
+         // should report an error, but this will get handled by the main form...
+      }
 
       // make sure to tag the private property of the outlook id
       if (gitem.ExtendedProperties == null)
