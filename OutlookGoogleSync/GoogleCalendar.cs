@@ -250,6 +250,9 @@ namespace OutlookGoogleSync
          {
             e.Start.DateTime = ai.Start;
             e.End.DateTime = ai.End;
+
+            e.Start.TimeZone = ai.StartTimeZone.Name;
+            e.End.TimeZone = ai.EndTimeZone.Name;
          }
 
          e.Summary = ai.Subject;
