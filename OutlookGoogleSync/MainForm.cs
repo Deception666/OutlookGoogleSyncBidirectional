@@ -522,8 +522,18 @@ namespace OutlookGoogleSync
                   // and the google item should be tied together by the use of properties...
                   oitem = OutlookCalendar.Instance.addEntry(gitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
 
-                  // google currently does not have an updated id... this needs to be reflected on the server...
-                  GoogleCalendar.Instance.updateEntry(gitem);
+                  try
+                  {
+                     // google currently does not have an updated id... this needs to be reflected on the server...
+                     GoogleCalendar.Instance.updateEntry(gitem);
+                  }
+                  catch (System.Exception ex)
+                  {
+                     // unable to update the google entry for some reason...
+                     // let the user know and the reason why...
+                     logboxout("Error: Google event cannot be bound to Outlook event!");
+                     logboxout("Reason: " + ex.Message);
+                  }
 
                   // need to release the com reference
                   System.Runtime.InteropServices.Marshal.ReleaseComObject(oitem);
