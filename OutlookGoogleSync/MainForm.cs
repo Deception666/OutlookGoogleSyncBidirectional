@@ -415,25 +415,29 @@ namespace OutlookGoogleSync
                       OutlookGoogleSync.Utilities.ObtainUserBodyData(oitem.Body) != OutlookGoogleSync.Utilities.ObtainUserBodyData(gitem.Description)) &&
                       oitem.LastModificationTime > gitem.Updated)
                   {
-                     // give some indication of what will take place
-                     if (signature(oitem) != signature(gitem))
+                     // the google event can only be updated if owned by the calendar...
+                     if (gitem.Organizer.Self.HasValue && gitem.Organizer.Self.Value)
                      {
-                        logboxout("Updating Google event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ") ==> " + oitem.Subject + " (" + oitem.Start + ")");
-                     }
-                     else
-                     {
-                        logboxout("Updating Google event description: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
-                     }
+                        // give some indication of what will take place
+                        if (signature(oitem) != signature(gitem))
+                        {
+                           logboxout("Updating Google event: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ") ==> " + oitem.Subject + " (" + oitem.Start + ")");
+                        }
+                        else
+                        {
+                           logboxout("Updating Google event description: " + gitem.Summary + " (" + GoogleCalendar.FormatTime(gitem.Start) + ")");
+                        }
 
-                     // update the event based on the outlook item
-                     GoogleCalendar.Instance.updateEntry(gitem, oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+                        // update the event based on the outlook item
+                        GoogleCalendar.Instance.updateEntry(gitem, oitem, cbAddDescription.Checked, cbAddReminders.Checked, cbAddAttendees.Checked);
+
+                        // update the status
+                        ++google_entries_updated;
+                     }
 
                      // this google item has been processed
                      google_items.Remove(gitem);
-
-                     // update the status
-                     ++google_entries_updated;
-                  }
+                     }
                }
 
                // need to release the com reference
