@@ -40,7 +40,7 @@ namespace OutlookGoogleSync
          Instance = this;
 
          //set system proxy
-         WebProxy wp = (WebProxy)System.Net.GlobalProxySelection.Select;
+         WebProxy wp = new WebProxy();
          wp.UseDefaultCredentials = true;
          System.Net.WebRequest.DefaultWebProxy = wp;
 
