@@ -81,6 +81,7 @@ namespace OutlookGoogleSync
          this.linkLabel1 = new System.Windows.Forms.LinkLabel();
          this.label4 = new System.Windows.Forms.Label();
          this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+         this.outlookKeepOpenAfterSync = new System.Windows.Forms.CheckBox();
          this.tabControl1.SuspendLayout();
          this.tabPage1.SuspendLayout();
          this.tabPage2.SuspendLayout();
@@ -188,6 +189,7 @@ namespace OutlookGoogleSync
          // 
          // groupBox6
          // 
+         this.groupBox6.Controls.Add(this.outlookKeepOpenAfterSync);
          this.groupBox6.Controls.Add(this.label6);
          this.groupBox6.Controls.Add(this.label5);
          this.groupBox6.Controls.Add(this.outlookAutoLogonPwdTextBox);
@@ -203,7 +205,7 @@ namespace OutlookGoogleSync
          // label6
          // 
          this.label6.AutoSize = true;
-         this.label6.Location = new System.Drawing.Point(109, 45);
+         this.label6.Location = new System.Drawing.Point(167, 43);
          this.label6.Name = "label6";
          this.label6.Size = new System.Drawing.Size(56, 13);
          this.label6.TabIndex = 4;
@@ -212,7 +214,7 @@ namespace OutlookGoogleSync
          // label5
          // 
          this.label5.AutoSize = true;
-         this.label5.Location = new System.Drawing.Point(126, 18);
+         this.label5.Location = new System.Drawing.Point(184, 16);
          this.label5.Name = "label5";
          this.label5.Size = new System.Drawing.Size(39, 13);
          this.label5.TabIndex = 3;
@@ -220,20 +222,20 @@ namespace OutlookGoogleSync
          // 
          // outlookAutoLogonPwdTextBox
          // 
-         this.outlookAutoLogonPwdTextBox.Location = new System.Drawing.Point(177, 39);
+         this.outlookAutoLogonPwdTextBox.Location = new System.Drawing.Point(228, 39);
          this.outlookAutoLogonPwdTextBox.Name = "outlookAutoLogonPwdTextBox";
          this.outlookAutoLogonPwdTextBox.PasswordChar = '*';
          this.outlookAutoLogonPwdTextBox.ReadOnly = true;
-         this.outlookAutoLogonPwdTextBox.Size = new System.Drawing.Size(291, 20);
+         this.outlookAutoLogonPwdTextBox.Size = new System.Drawing.Size(240, 20);
          this.outlookAutoLogonPwdTextBox.TabIndex = 2;
          this.outlookAutoLogonPwdTextBox.UseSystemPasswordChar = true;
          // 
          // outlookAutoLogonTextBox
          // 
-         this.outlookAutoLogonTextBox.Location = new System.Drawing.Point(177, 12);
+         this.outlookAutoLogonTextBox.Location = new System.Drawing.Point(228, 12);
          this.outlookAutoLogonTextBox.Name = "outlookAutoLogonTextBox";
          this.outlookAutoLogonTextBox.ReadOnly = true;
-         this.outlookAutoLogonTextBox.Size = new System.Drawing.Size(291, 20);
+         this.outlookAutoLogonTextBox.Size = new System.Drawing.Size(240, 20);
          this.outlookAutoLogonTextBox.TabIndex = 1;
          // 
          // outlookAutoLogonCheckBox
@@ -521,6 +523,17 @@ namespace OutlookGoogleSync
          this.notifyIcon1.Text = "OutlookGoogleSync";
          this.notifyIcon1.Click += new System.EventHandler(this.NotifyIcon1Click);
          // 
+         // outlookKeepOpenAfterSync
+         // 
+         this.outlookKeepOpenAfterSync.AutoSize = true;
+         this.outlookKeepOpenAfterSync.Location = new System.Drawing.Point(12, 41);
+         this.outlookKeepOpenAfterSync.Name = "outlookKeepOpenAfterSync";
+         this.outlookKeepOpenAfterSync.Size = new System.Drawing.Size(132, 17);
+         this.outlookKeepOpenAfterSync.TabIndex = 5;
+         this.outlookKeepOpenAfterSync.Text = "Keep Open After Sync";
+         this.outlookKeepOpenAfterSync.UseVisualStyleBackColor = true;
+         this.outlookKeepOpenAfterSync.CheckedChanged += new System.EventHandler(this.outlookKeepOpenAfterSync_CheckedChanged);
+         // 
          // MainForm
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -592,14 +605,6 @@ namespace OutlookGoogleSync
       private System.Windows.Forms.Label label5;
       private System.Windows.Forms.TextBox outlookAutoLogonPwdTextBox;
       private System.Windows.Forms.Button clearUserPropertiesBtn;
-
-
-
-
-
-
-
-
-
+      private System.Windows.Forms.CheckBox outlookKeepOpenAfterSync;
    }
 }

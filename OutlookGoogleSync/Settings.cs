@@ -46,6 +46,7 @@ namespace OutlookGoogleSync
       public string OutlookAutoLogonProfileName = "";
       public byte[] OutlookAutoLogonProfilePassword = null;
       public bool OutlookAutoLogonEnabled = false;
+      public bool OutlookKeepOpenAfterSync = false;
 
       public string GetOutlookAutoLogonProfilePassword( )
       {

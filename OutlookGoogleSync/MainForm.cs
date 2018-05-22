@@ -74,6 +74,7 @@ namespace OutlookGoogleSync
          cbAddReminders.Checked = Settings.Instance.AddReminders;
          cbCreateFiles.Checked = Settings.Instance.CreateTextFiles;
          outlookAutoLogonCheckBox.Checked = Settings.Instance.OutlookAutoLogonEnabled;
+         outlookKeepOpenAfterSync.Checked = Settings.Instance.OutlookKeepOpenAfterSync;
          outlookAutoLogonTextBox.Text = Settings.Instance.OutlookAutoLogonProfileName;
          outlookAutoLogonPwdTextBox.Text = Settings.Instance.GetOutlookAutoLogonProfilePassword();
 
@@ -280,8 +281,11 @@ namespace OutlookGoogleSync
             setNextSync(5);
          }
 
-         // close the outlook calendar instance so not to always be logged in
-         OutlookCalendar.Instance.Release();
+         if (!Settings.Instance.OutlookKeepOpenAfterSync)
+         {
+            // close the outlook calendar instance so not to always be logged in
+            OutlookCalendar.Instance.Release();
+         }
 
          bSyncNow.Enabled = true;
       }
@@ -854,7 +858,6 @@ namespace OutlookGoogleSync
             Settings.Instance.OutlookAutoLogonEnabled = false;
             if (OutlookCalendar.IsLoggedIn()) OutlookCalendar.Instance.Release();
          }
-
       }
 
       private void clearUserPropertiesBtn_Click(object sender, EventArgs ea)
@@ -946,6 +949,11 @@ namespace OutlookGoogleSync
          {
             e.Handled = true;
          }
+      }
+
+      private void outlookKeepOpenAfterSync_CheckedChanged(object sender, EventArgs e)
+      {
+         Settings.Instance.OutlookKeepOpenAfterSync = outlookKeepOpenAfterSync.Checked;
       }
    }
 }
