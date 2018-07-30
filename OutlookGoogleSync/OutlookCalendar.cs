@@ -168,7 +168,16 @@ namespace OutlookGoogleSync
       {
          ModifyEvent(ai, e, add_description, add_reminders, add_attendees);
 
-         ai.Save();
+         try
+         {
+            // save the outlook event
+            ai.Save();
+         }
+         catch (System.Exception)
+         {
+            // unable to save the outlook item...
+            // should report an error, but this will get handled by the main form...
+         }
 
          return ai;
       }

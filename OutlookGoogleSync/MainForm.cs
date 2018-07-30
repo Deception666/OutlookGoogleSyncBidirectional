@@ -266,7 +266,7 @@ namespace OutlookGoogleSync
 
          Boolean syncOk = synchronize();
          logboxout("--------------------------------------------------");
-         logboxout(syncOk ? "Sync finished with success !" : "Operation aborted !");
+         logboxout(syncOk ? "Sync finished with success!" : "Sync finished with errors!");
 
          if (syncOk)
          {
@@ -290,7 +290,7 @@ namespace OutlookGoogleSync
          bSyncNow.Enabled = true;
       }
 
-      void synchronize( List< AppointmentItem > outlook_items, List< Event > google_items )
+      bool synchronize( List< AppointmentItem > outlook_items, List< Event > google_items )
       {
          // TODO: consider description updates (only needs to be considered when checked... come back and fix this)
          // TODO: optimize comparison algorithms - this one not mine, but should consider for larger sets of data
@@ -309,6 +309,7 @@ namespace OutlookGoogleSync
          uint outlook_entries_updated = 0;
          uint outlook_entries_removed = 0;
          uint bound_entries_found = 0;
+         uint errors = 0;
 
          // first synchronize outlook -> google
 
@@ -531,8 +532,13 @@ namespace OutlookGoogleSync
                   {
                      // unable to update the google entry for some reason...
                      // let the user know and the reason why...
+                     logboxout("");
                      logboxout("Error: Google event cannot be bound to Outlook event!");
                      logboxout("Reason: " + ex.Message);
+                     logboxout("");
+
+                     // update the stats
+                     ++errors;
                   }
 
                   // need to release the com reference
@@ -606,8 +612,13 @@ namespace OutlookGoogleSync
                   {
                      // unable to save the outlook entry for some reason...
                      // let the user know and the reason why...
+                     logboxout("");
                      logboxout("Error: Outlook event cannot be saved!");
                      logboxout("Reason: " + ex.Message);
+                     logboxout("");
+
+                     // update the stats
+                     ++errors;
                   }
 
                   // need to release the com reference
@@ -639,6 +650,10 @@ namespace OutlookGoogleSync
          logboxout("Outlook entries removed: " + outlook_entries_removed);
          logboxout("");
          logboxout("Bound entries found: " + bound_entries_found);
+         logboxout("");
+         logboxout("Errors found: " + errors);
+
+         return errors == 0;
       }
 
       Boolean synchronize()
@@ -685,9 +700,7 @@ namespace OutlookGoogleSync
          OutlookCalendar.Instance.GoogleDefaultReminderMinutesBeforeStart = GoogleCalendar.Instance.GetDefaultReminderMinutesBeforeStart();
 
          // synchronize both outlook and google calendars
-         synchronize(OutlookEntries, GoogleEntries);
-
-         return true;
+         return synchronize(OutlookEntries, GoogleEntries);
       }
 
       //creates a standardized summary string with the key attributes of a calendar entry for comparison
